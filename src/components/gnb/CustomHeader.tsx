@@ -1,11 +1,65 @@
 import Image from "next/image";
-import style from "./CustomHeader.module.css";
+import styled from "styled-components";
+
+const Header = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eee;
+`;
+
+const Logo = styled(Image)`
+  cursor: pointer;
+`;
+
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 24px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+`;
+
+const SearchBtn = styled(Image)`
+  cursor: pointer;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+`;
+
+const NavRightBtnContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const RightBtn = styled.h3`
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    color: #0070f3;
+  }
+`;
+
+const AlertIcon = styled(Image)`
+  cursor: pointer;
+`;
 
 const CustomHeader = () => {
   return (
-    <header className={style.header}>
-      <Image
-        className={style.logo}
+    <Header>
+      <Logo
         src={"/logo.svg"}
         width={112}
         height={40}
@@ -13,30 +67,27 @@ const CustomHeader = () => {
         onClick={() => {}}
         priority
       />
-      <div className={style["search-container"]}>
-        <Image
-          className={style["search-btn"]}
+      <SearchContainer>
+        <SearchBtn
           src={"/search.svg"}
           width={20}
           height={20}
           alt="찾기 버튼"
           onClick={() => {}}
         />
-        <input
-          className={style["search-input"]}
+        <SearchInput
           type="text"
           value=""
           onChange={() => {}}
           onKeyDown={() => {}}
           placeholder="가게 이름으로 찾아보세요"
-        ></input>
-      </div>
-      <div className={style["nav-right-btn-container"]}>
-        <h3 className={style["right-first-btn"]}>내 가게</h3>
-        <h3 className={style["right-second-btn"]}>로그아웃</h3>
+        />
+      </SearchContainer>
+      <NavRightBtnContainer>
+        <RightBtn>내 가게</RightBtn>
+        <RightBtn>로그아웃</RightBtn>
         {true && (
-          <Image
-            className={style["alert-icon"]}
+          <AlertIcon
             src={false ? "/alert-active.svg" : "/alert-inactive.svg"}
             width={24}
             height={24}
@@ -44,9 +95,10 @@ const CustomHeader = () => {
             onClick={() => {}}
           />
         )}
-      </div>
-    </header>
+      </NavRightBtnContainer>
+    </Header>
   );
 };
 
 export default CustomHeader;
+
