@@ -1,0 +1,144 @@
+.header {
+  margin: 0 auto;
+  padding: 15px 208px;
+  display: flex;
+  width: 1440px;
+  height: 70px;
+
+  background-color: white;
+}
+
+.logo {
+  width: 112px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.search-container {
+  margin-left: 43px;
+  position: relative;
+}
+
+.search-input {
+  width: 450px;
+  padding: 10px 10px 10px 40px;
+  border: none;
+  border-radius: 10px;
+  background-color: #f2f2f3;
+  outline: none;
+}
+
+.search-btn {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  z-index: 1;
+  cursor: pointer;
+}
+
+.search-input:focus {
+  border: 1px solid #ff4040;
+}
+
+.search-input::placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: #a4a1aa;
+}
+
+.nav-right-btn-container {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 40px;
+}
+
+.right-first-btn,
+.right-second-btn {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.alert-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 744px) {
+  .header {
+    padding: 15px 32px;
+    width: 744px;
+  }
+
+  .search-container {
+    margin-left: 32px;
+  }
+
+  .search-input {
+    width: 344px;
+  }
+
+  .nav-right-btn-container {
+    gap: 12px;
+  }
+  .alert-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .header {
+    padding: 10px 20px;
+    display: grid;
+    align-content: space-between;
+    grid-template-areas:
+      "logo logo nav"
+      "search search search";
+    grid-template-columns: 2fr 1fr;
+    width: 375px;
+    height: 102px;
+  }
+
+  .logo {
+    grid-area: logo;
+    width: 80px;
+    height: 30px;
+  }
+
+  .search-container {
+    grid-area: search;
+    margin-left: 0px;
+  }
+
+  .search-input {
+    width: 335px;
+    padding: 8px 8px 8px 32px;
+  }
+
+  .search-btn {
+    width: 16px;
+    height: 16px;
+  }
+
+  .search-input::placeholder {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .nav-right-btn-container {
+    grid-area: nav;
+    display: flex;
+    gap: 16px;
+  }
+
+  .right-first-btn,
+  .right-second-btn {
+    font-size: 14px;
+  }
+}
