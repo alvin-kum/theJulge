@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import NavBar from "@/components/NavBar";
-import CustomCard from "@/components/CustomCard";
+import CustomCard from "@/components/Card/CustomCard"; // 경로 수정!
 
 const Container = styled.div`
   min-height: 100vh;

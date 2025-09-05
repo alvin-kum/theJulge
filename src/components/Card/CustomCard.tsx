@@ -4,12 +4,12 @@ import styled, { css } from "styled-components";
 
 const Card = styled.div`
   background: #fff;
-  border: 1px solid ${({ theme }) => theme.color.border};
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 16px;
   margin: 16px;
   max-width: 300px;
-  box-shadow: ${({ theme }) => theme.shadow.card};
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   cursor: pointer;
 
   &:hover {
@@ -35,7 +35,7 @@ const CardTitle = styled.h3`
 
 const CardInfo = styled.p`
   margin: 4px 0;
-  color: ${({ theme }) => theme.color.sub};
+  color: #6b7280;
   font-size: 14px;
 `;
 
@@ -45,7 +45,7 @@ const PayInfo = styled.div`
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid ${({ theme }) => theme.color.border};
+  border-top: 1px solid #e5e7eb;
 `;
 
 type Props = {
