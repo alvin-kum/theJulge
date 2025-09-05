@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import NavBar from "@/components/NavBar";
-import { apiClient } from '@/lib/api/client';
+import { apiClient, ApiError } from '@/lib/api/client';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -215,58 +215,76 @@ export default function ShopManage() {
         const urlShopId = router.query.id as string;
         
         if (urlShopId) {
+          console.log('URL에서 shop ID 가져옴:', urlShopId);
           setShopId(urlShopId);
         } else {
+          console.log('/shops/my API 호출 시작');
           // URL에 ID가 없으면 안전한 API 호출로 내 가게 확인
           const { data: response, error: apiError } = await apiClient.safeGet('/shops/my', 1);
           
           if (apiError) {
             console.error('내 가게 정보 확인 실패:', apiError);
+            alert(`가게 정보를 확인할 수 없습니다: ${apiError.message}`);
             router.replace('/shop');
             return;
           }
           
           if (response?.item && response.item.id) {
+            console.log('내 가게 ID 찾음:', response.item.id);
             setShopId(response.item.id);
           } else {
+            console.log('가게가 없어서 /shop으로 리다이렉트');
             router.replace('/shop');
             return;
           }
         }
       } catch (error) {
         console.error('가게 ID 확인 실패:', error);
+        alert('가게 정보 확인 중 오류가 발생했습니다.');
         router.replace('/shop');
       }
     };
 
     if (router.isReady) {
+      console.log('Router 준비됨, getShopId 실행');
       getShopId();
     }
   }, [router.isReady, router.query.id]);
 
   useEffect(() => {
-    if (!shopId) return;
+    if (!shopId) {
+      console.log('shopId가 없어서 데이터 로딩 건너뜀');
+      return;
+    }
+
+    console.log('shopId로 데이터 로딩 시작:', shopId);
 
     const fetchData = async () => {
       try {
         setLoading(true);
         
         // 가게 정보 가져오기
+        console.log(`/shops/${shopId} API 호출`);
         const shopResponse = await apiClient.get(`/shops/${shopId}`);
+        console.log('가게 정보 응답:', shopResponse);
         setShopData(shopResponse.item);
         
         // 가게의 공고 목록 가져오기
         try {
+          console.log(`/shops/${shopId}/notices API 호출`);
           const noticeResponse = await apiClient.get(`/shops/${shopId}/notices`);
+          console.log('공고 목록 응답:', noticeResponse);
           setNotices(noticeResponse.items || []);
         } catch (noticeError) {
           console.error('가게 공고 목록 가져오기 실패:', noticeError);
           // 가게별 공고 API가 없으면 전체 공고에서 필터링
           try {
+            console.log('전체 공고 목록으로 대체 시도');
             const allNoticesResponse = await apiClient.get('/notices');
             const filteredNotices = (allNoticesResponse.items || []).filter(
               (notice: any) => notice.shop?.id === shopId
             );
+            console.log('필터링된 공고 목록:', filteredNotices);
             setNotices(filteredNotices);
           } catch (allNoticesError) {
             console.error('전체 공고 목록 가져오기도 실패:', allNoticesError);
@@ -275,6 +293,7 @@ export default function ShopManage() {
         }
       } catch (error) {
         console.error('가게 정보 가져오기 실패:', error);
+        alert('가게 정보를 불러올 수 없습니다.');
         // 가게 정보를 가져올 수 없으면 shop 페이지로 리다이렉트
         router.replace('/shop');
       } finally {
@@ -283,7 +302,7 @@ export default function ShopManage() {
     };
 
     fetchData();
-  }, [shopId]);
+  }, [shopId, router]);
 
   const handleEditShop = () => {
     router.push(`/shop/edit?id=${shopId}`);
@@ -325,7 +344,10 @@ export default function ShopManage() {
         <NavBar />
         <Container>
           <Content>
-            <LoadingState>가게 정보를 확인하고 있습니다...</LoadingState>
+            <LoadingState>
+              가게 정보를 확인하고 있습니다...
+              {shopId && <div>Shop ID: {shopId}</div>}
+            </LoadingState>
           </Content>
         </Container>
       </>
@@ -338,7 +360,14 @@ export default function ShopManage() {
         <NavBar />
         <Container>
           <Content>
-            <EmptyState>가게 정보를 불러올 수 없습니다.</EmptyState>
+            <EmptyState>
+              가게 정보를 불러올 수 없습니다.
+              <div style={{ marginTop: '16px' }}>
+                <button onClick={() => router.push('/shop')}>
+                  돌아가기
+                </button>
+              </div>
+            </EmptyState>
           </Content>
         </Container>
       </>
