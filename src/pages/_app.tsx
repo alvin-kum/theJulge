@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import PageLayout from "@/components/layout/PageLayout";
 import GlobalStyle from "@/styles/GlobalStyle";
-import { queryClient } from "@/store/queryClient";
 
 const NO_LAYOUT = ["/login", "/signup"];
 

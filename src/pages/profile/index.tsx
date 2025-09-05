@@ -1,4 +1,3 @@
-import { useRouteGuard } from "@/hooks/useRouteGuard";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CustomHeader from "../../components/gnb/CustomHeader";
