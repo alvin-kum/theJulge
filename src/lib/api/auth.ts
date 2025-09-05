@@ -1,25 +1,41 @@
-import { api } from "@/lib/axios";
-import type { LoginResponse, SignupResponse } from "@/types/auth";
+import { plainAxios, authAxios } from "../axios"; // 인스턴스 둘 다 import
 
-// POST /token
-export async function login(payload: { email: string; password: string }) {
-  const { data } = await api.post<LoginResponse>("/token", payload);
-  return data;
-}
+// ✅ 로그인 (토큰 없음)
+export const login = async (email: string, password: string) => {
+  const res = await plainAxios.post("/token", { email, password });
 
-// POST /users  (회원가입)
-export async function signup(payload: {
-  email: string;
-  password: string;
-  type: "employer" | "employee";
-}) {
-  const { data } = await api.post<SignupResponse>("/users", payload);
-  return data;
-}
+  // ① 응답에서 토큰 & 유저정보 꺼내기
+  const token = res.data.item.token;
+  const userId = res.data.item.user.item.id;
+  const userType = res.data.item.user.item.type;
 
-/** 헬퍼: 로그인 응답에서 토큰/유형/유저ID 추출 */
-export const extractAuth = (res: LoginResponse) => {
-  const token = res.item.token;
-  const user = res.item.user.item;
-  return { token, type: user.type, userId: user.id, email: user.email };
+  // ② localStorage에 저장 (로그인 유지)
+  if (typeof window !== "undefined") {
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("userType", userType);
+  }
+
+  // ③ 호출한 컴포넌트에서도 쓸 수 있게 리턴
+  return res.data;
+};
+
+// ✅ 회원가입 (토큰 없음)
+export const register = async (
+  email: string,
+  password: string,
+  type: "employee" | "employer"
+) => {
+  const res = await plainAxios.post("/users", {
+    email,
+    password,
+    type,
+  });
+  return res.data;
+};
+
+// ✅ 내 정보 조회 (토큰 필요 → authAxios 사용)
+export const fetchMyInfo = async () => {
+  const res = await authAxios.get("/users/me");
+  return res.data.item; // { id, email, type, name, phone, address, bio ... }
 };

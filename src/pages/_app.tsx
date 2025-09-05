@@ -6,7 +6,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import GlobalStyle from "@/styles/GlobalStyle";
 import { queryClient } from "@/store/queryClient";
 
-const NO_LAYOUT = ["/login", "/register"];
+const NO_LAYOUT = ["/login", "/signup"];
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
