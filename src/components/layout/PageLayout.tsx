@@ -1,5 +1,5 @@
 import Header from "@/components/gnb/CustomHeader";
-import Footer from "@/components/footer/Footer";
+import Footer from "@/components/footer";
 import styled from "styled-components";
 
 const Main = styled.main`
