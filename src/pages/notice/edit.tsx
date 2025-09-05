@@ -1,11 +1,16 @@
-import { useRouteGuard } from "@/hooks/useRouteGuard";
+import Head from "next/head";
 
-export default function EditNoticePage() {
-  useRouteGuard("employer");
+export default function EditNotice() {
   return (
-    <div>
-      <h1>공고 수정</h1>
-      {/* TODO: 공고 수정 폼 */}
-    </div>
+    <>
+      <Head>
+        <title>공고 편집 - theJulge</title>
+        <meta name="description" content="공고 편집 페이지" />
+      </Head>
+      <div>
+        <h1>공고 편집</h1>
+        {/* 공고 편집 폼 컴포넌트가 들어갈 예정 */}
+      </div>
+    </>
   );
 }

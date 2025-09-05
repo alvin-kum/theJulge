@@ -2,7 +2,6 @@ import { useState } from "react";
 import RecommendedPosts from "@/Sections/RecommendedPosts";
 import AllPosts from "@/Sections/AllPosts";
 import { mockPosts } from "@/data/mockPosts";
-import Footer from "@/components/footer";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);

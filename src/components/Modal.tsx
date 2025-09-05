@@ -32,8 +32,8 @@ const Overlay = styled.div`
 
 const ModalContainer = styled.div`
   background: white;
-  width: 540px;        
-  height: 250px;       
+  width: 540px;
+  height: 250px;
   padding: 24px;
   border-radius: 8px;
   display: flex;
@@ -59,8 +59,8 @@ const ConfirmButton = styled.button`
   background-color: #ea4c1d;
   color: white;
   border: none;
-  border-radius: 8px;   
-  padding: 14px 46px;  
+  border-radius: 8px;
+  padding: 14px 46px;
   cursor: pointer;
 
   &:hover {

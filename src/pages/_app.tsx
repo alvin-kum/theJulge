@@ -1,5 +1,4 @@
 import type { AppProps } from "next/app";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import PageLayout from "@/components/layout/PageLayout";
@@ -13,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const content = <Component {...pageProps} />;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {/* 🔹 기본 SEO / 메타태그 */}
       <Head>
         {/* 뷰포트 */}
@@ -42,7 +41,10 @@ export default function App({ Component, pageProps }: AppProps) {
           content="맞춤형 매칭 플랫폼으로 사람과 서비스, 기업과 인재를 빠르고 정확하게 연결합니다."
         />
         <meta property="og:url" content="https://www.example.com" />
-        <meta property="og:image" content="https://www.example.com/og-image.png" />
+        <meta
+          property="og:image"
+          content="https://www.example.com/og-image.png"
+        />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -51,7 +53,10 @@ export default function App({ Component, pageProps }: AppProps) {
           name="twitter:description"
           content="맞춤형 매칭 플랫폼으로 사람과 서비스, 기업과 인재를 빠르고 정확하게 연결합니다."
         />
-        <meta name="twitter:image" content="https://www.example.com/og-image.png" />
+        <meta
+          name="twitter:image"
+          content="https://www.example.com/og-image.png"
+        />
       </Head>
 
       {/* 글로벌 스타일 + 페이지 */}
@@ -61,6 +66,6 @@ export default function App({ Component, pageProps }: AppProps) {
       ) : (
         <PageLayout>{content}</PageLayout>
       )}
-    </QueryClientProvider>
+    </>
   );
 }
