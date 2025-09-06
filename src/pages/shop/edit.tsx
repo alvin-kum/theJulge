@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { apiClient } from "@/lib/api/client";
+import { apiClient } from '@/lib/api/client';
 
 const Container = styled.div`
   min-height: 100vh;
   background: #fafafa;
-  padding-top: 80px;
 `;
 
 const Content = styled.div`
@@ -37,7 +36,7 @@ const CloseButton = styled.button`
   color: #6b7280;
   cursor: pointer;
   padding: 4px;
-
+  
   &:hover {
     color: #374151;
   }
@@ -60,7 +59,7 @@ const FormRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-
+  
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
@@ -90,13 +89,13 @@ const Input = styled.input`
   font-size: 16px;
   background: white;
   transition: all 0.2s;
-
+  
   &:focus {
     outline: none;
     border-color: #ea580c;
     box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
   }
-
+  
   &::placeholder {
     color: #9ca3af;
   }
@@ -111,7 +110,7 @@ const Select = styled.select`
   background: white;
   cursor: pointer;
   transition: all 0.2s;
-
+  
   &:focus {
     outline: none;
     border-color: #ea580c;
@@ -138,7 +137,7 @@ const ImageUploadArea = styled.div`
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
-
+  
   &:hover {
     border-color: #ea580c;
     background: #fef2f2;
@@ -191,13 +190,13 @@ const TextArea = styled.textarea`
   resize: vertical;
   background: white;
   transition: all 0.2s;
-
+  
   &:focus {
     outline: none;
     border-color: #ea580c;
     box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
   }
-
+  
   &::placeholder {
     color: #9ca3af;
   }
@@ -215,109 +214,154 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 8px;
-
+  
   &:hover {
     background: #dc2626;
   }
-
+  
   &:disabled {
     background: #9ca3af;
     cursor: not-allowed;
   }
 `;
 
+const LoadingState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  color: #6b7280;
+  min-height: calc(100vh - 160px);
+  justify-content: center;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #ea580c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+`;
+
 const categories = [
-  "한식",
-  "중식",
-  "일식",
-  "양식",
-  "분식",
-  "카페",
-  "편의점",
-  "기타",
+  '한식', '중식', '일식', '양식', '분식', 
+  '카페', '편의점', '기타'
 ];
 
 export default function ShopEdit() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [shopId, setShopId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [shopId, setShopId] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>('');
   const [formData, setFormData] = useState({
-    name: "",
-    category: "한식",
-    address1: "서울시 종로구",
-    address2: "",
-    description: "",
-    imageUrl: "",
+    name: '',
+    category: '한식',
+    address1: '서울시 종로구',
+    address2: '',
+    description: '',
+    imageUrl: '',
     originalHourlyPay: 10000,
   });
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    const getShopId = async () => {
+    const loadShopData = async () => {
       try {
+        setLoading(true);
+        console.log('1단계: shopId 확인 시작');
+        
+        // 1단계: URL에서 shopId 확인
         const urlShopId = router.query.id as string;
-
-        if (urlShopId) {
-          setShopId(urlShopId);
-        } else {
-          const myShopResponse = await apiClient.get("/shops/my");
-          if (myShopResponse.item && myShopResponse.item.id) {
-            setShopId(myShopResponse.item.id);
-          } else {
-            router.replace("/shop");
+        
+        let actualShopId = urlShopId;
+        
+        if (!actualShopId) {
+          console.log('1단계 실패 - URL에 ID 없음, 2단계 시작');
+          
+          // 2단계: /shops/my API 호출
+          const { data: response, error: apiError } = await apiClient.safeGet('/shops/my', 2);
+          
+          if (apiError) {
+            console.error('2단계 실패 - 내 가게 정보 조회 실패:', apiError);
+            alert('가게 정보를 확인할 수 없습니다.');
+            router.push('/shop/register');
             return;
           }
+          
+          if (response?.item?.id) {
+            console.log('2단계 성공 - 내 가게 ID 찾음:', response.item.id);
+            actualShopId = response.item.id;
+          } else {
+            console.log('2단계 실패 - 가게가 없어서 등록 페이지로 이동');
+            router.push('/shop/register');
+            return;
+          }
+        } else {
+          console.log('1단계 성공 - URL에서 shop ID 가져옴:', actualShopId);
+        }
+        
+        setShopId(actualShopId);
+        
+        // 3단계: 가게 정보 로드
+        console.log(`3단계: /shops/${actualShopId} API 호출`);
+        const shopResponse = await apiClient.get(`/shops/${actualShopId}`);
+        
+        if (shopResponse?.item) {
+          console.log('3단계 성공 - 가게 정보 로드:', shopResponse.item);
+          const shop = shopResponse.item;
+          setFormData({
+            name: shop.name || '',
+            category: shop.category || '한식',
+            address1: shop.address1 || '서울시 종로구',
+            address2: shop.address2 || '',
+            description: shop.description || '',
+            imageUrl: shop.imageUrl || '',
+            originalHourlyPay: shop.originalHourlyPay || 10000
+          });
+          
+          // 기존 이미지 미리보기 설정
+          if (shop.imageUrl) {
+            setImagePreview(shop.imageUrl);
+          }
+        } else {
+          console.error('3단계 실패 - 가게 정보가 없음');
+          alert('가게 정보를 찾을 수 없습니다.');
+          router.push('/shop/register');
         }
       } catch (error) {
-        console.error("가게 ID 확인 실패:", error);
-        router.replace("/shop");
+        console.error('가게 정보 로드 실패:', error);
+        alert('가게 정보를 불러오는데 실패했습니다.');
+        router.push('/shop/register');
+      } finally {
+        setLoading(false);
+        setDataLoading(false);
       }
     };
 
     if (router.isReady) {
-      getShopId();
+      loadShopData();
     }
   }, [router.isReady, router.query.id]);
 
-  useEffect(() => {
-    if (!shopId) return;
-
-    const fetchShopData = async () => {
-      try {
-        const response = await apiClient.get(`/shops/${shopId}`);
-        if (response.item) {
-          const data = {
-            name: response.item.name || "",
-            category: response.item.category || "한식",
-            address1: response.item.address1 || "",
-            address2: response.item.address2 || "",
-            description: response.item.description || "",
-            imageUrl: response.item.imageUrl || "",
-            originalHourlyPay: response.item.originalHourlyPay || 10000,
-          };
-          setFormData(data);
-          if (data.imageUrl) {
-            setImagePreview(data.imageUrl);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch shop data:", error);
-        alert("가게 정보를 불러오는데 실패했습니다.");
-      }
-    };
-
-    fetchShopData();
-  }, [shopId]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: name === "originalHourlyPay" ? Number(value) : value,
+      [name]: name === 'originalHourlyPay' ? Number(value) : value
     }));
   };
 
@@ -328,7 +372,7 @@ export default function ShopEdit() {
       reader.onloadend = () => {
         const result = reader.result as string;
         setImagePreview(result);
-        setFormData((prev) => ({ ...prev, imageUrl: result }));
+        setFormData(prev => ({ ...prev, imageUrl: result }));
       };
       reader.readAsDataURL(file);
     }
@@ -336,60 +380,75 @@ export default function ShopEdit() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!shopId) {
-      alert("가게 정보를 확인할 수 없습니다.");
+      alert('가게 정보를 확인할 수 없습니다.');
       return;
     }
-
+    
     if (!formData.name.trim()) {
-      alert("가게 이름을 입력해주세요.");
+      alert('가게 이름을 입력해주세요.');
       return;
     }
-
+    
     if (!formData.address1.trim()) {
-      alert("주소를 입력해주세요.");
+      alert('주소를 입력해주세요.');
       return;
     }
-
+    
     if (formData.originalHourlyPay < 9620) {
-      alert("기본 시급은 최저시급(9,620원) 이상이어야 합니다.");
+      alert('기본 시급은 최저시급(9,620원) 이상이어야 합니다.');
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
     try {
       await apiClient.put(`/shops/${shopId}`, formData);
-      alert("가게 정보가 수정되었습니다.");
+      alert('가게 정보가 수정되었습니다.');
       router.push(`/shop/manage?id=${shopId}`);
     } catch (error) {
-      console.error("Failed to update shop:", error);
-      alert("수정에 실패했습니다.");
+      console.error('Failed to update shop:', error);
+      alert('수정에 실패했습니다.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    if (confirm("변경사항이 저장되지 않을 수 있습니다. 정말 나가시겠습니까?")) {
+    if (confirm('변경사항이 저장되지 않을 수 있습니다. 정말 나가시겠습니까?')) {
       if (shopId) {
         router.push(`/shop/manage?id=${shopId}`);
       } else {
-        router.push("/shop");
+        router.push('/shop');
       }
     }
   };
 
+  if (loading || dataLoading) {
+    return (
+      <>
+        <Head>
+          <title>가게 수정 - THE JULGE</title>
+        </Head>
+        <Container>
+          <LoadingContainer>
+            <LoadingSpinner />
+          </LoadingContainer>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
-        <title>가게 정보 - THE JULGE</title>
+        <title>가게 수정 - THE JULGE</title>
         <meta name="description" content="가게 정보를 수정하세요" />
       </Head>
       <Container>
         <Content>
           <Header>
-            <Title>가게 정보</Title>
+            <Title>가게 수정</Title>
             <CloseButton onClick={handleClose}>✕</CloseButton>
           </Header>
 
@@ -409,7 +468,7 @@ export default function ShopEdit() {
                     required
                   />
                 </FormGroup>
-
+                
                 <FormGroup>
                   <Label>
                     분류<Required>*</Required>
@@ -420,7 +479,7 @@ export default function ShopEdit() {
                     onChange={handleInputChange}
                     required
                   >
-                    {categories.map((category) => (
+                    {categories.map(category => (
                       <option key={category} value={category}>
                         {category}
                       </option>
@@ -443,7 +502,7 @@ export default function ShopEdit() {
                     required
                   />
                 </FormGroup>
-
+                
                 <FormGroup>
                   <Label>
                     상세 주소<Required>*</Required>
@@ -477,23 +536,14 @@ export default function ShopEdit() {
               <FormGroup>
                 <Label>가게 이미지</Label>
                 <ImageUploadSection>
-                  <ImageUploadArea
-                    onClick={() =>
-                      document.getElementById("imageInput")?.click()
-                    }
-                  >
+                  <ImageUploadArea onClick={() => document.getElementById('imageInput')?.click()}>
                     {imagePreview ? (
-                      <ImagePreview
-                        src={imagePreview}
-                        alt="가게 이미지 미리보기"
-                      />
+                      <ImagePreview src={imagePreview} alt="가게 이미지 미리보기" />
                     ) : (
                       <>
                         <UploadIcon>📷</UploadIcon>
                         <UploadText>이미지 첨부하기</UploadText>
-                        <UploadSubtext>
-                          이미지를 클릭해서 파일을 첨부해 보세요
-                        </UploadSubtext>
+                        <UploadSubtext>이미지를 클릭해서 파일을 첨부해 보세요</UploadSubtext>
                       </>
                     )}
                   </ImageUploadArea>
@@ -516,8 +566,8 @@ export default function ShopEdit() {
                 />
               </FormGroup>
 
-              <SubmitButton type="submit" disabled={loading}>
-                {loading ? "저장 중..." : "완료하기"}
+              <SubmitButton type="submit" disabled={submitting}>
+                {submitting ? '저장 중...' : '완료하기'}
               </SubmitButton>
             </Form>
           </FormCard>

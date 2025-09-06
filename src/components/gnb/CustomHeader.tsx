@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 
 const Header = styled.header`
@@ -57,6 +58,8 @@ const AlertIcon = styled(Image)`
 `;
 
 const CustomHeader = () => {
+  const router = useRouter();
+
   return (
     <Header>
       <Logo
@@ -64,7 +67,7 @@ const CustomHeader = () => {
         width={112}
         height={40}
         alt="더줄게 로고"
-        onClick={() => {}}
+        onClick={() => router.push("/")}
         priority
       />
       <SearchContainer>
@@ -84,7 +87,7 @@ const CustomHeader = () => {
         />
       </SearchContainer>
       <NavRightBtnContainer>
-        <RightBtn>내 가게</RightBtn>
+        <RightBtn onClick={() => router.push("/shop")}>내 가게</RightBtn>
         <RightBtn>로그아웃</RightBtn>
         {true && (
           <AlertIcon

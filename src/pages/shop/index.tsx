@@ -6,7 +6,7 @@ import styled from "styled-components";
 const Container = styled.div`
   min-height: 100vh;
   background: #fafafa;
-  padding-top: 80px;
+  /* padding-top: 80px; 제거 - PageLayout이 처리 */
 `;
 
 const Content = styled.div`
@@ -35,14 +35,10 @@ const LoadingSpinner = styled.div`
   border-top: 3px solid #ea580c;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-
+  
   @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;
 
@@ -51,8 +47,8 @@ export default function Shop() {
 
   useEffect(() => {
     // 바로 가게 관리 페이지로 리다이렉트
-    const shopId = "422a49b1-75b7-4242-b00b-d678bed6573b";
-    console.log("🚀 가게 관리 페이지로 바로 이동");
+    const shopId = '422a49b1-75b7-4242-b00b-d678bed6573b';
+    console.log('🚀 가게 관리 페이지로 바로 이동');
     router.replace(`/shop/manage?id=${shopId}`);
   }, [router]);
 
@@ -61,6 +57,7 @@ export default function Shop() {
       <Head>
         <title>내 가게 - THE JULGE</title>
       </Head>
+      {/* CustomHeader 제거 - PageLayout이 처리 */}
       <Container>
         <Content>
           <LoadingState>
