@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px 12px;
+  gap: 4px;
+  border: 1px solid #e5e4e7;
+  border-radius: 5px;
+  background-color: #ffffff;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border: none;
+  border-radius: 5px;
+}
+
+.dot_approve {
+  background-color: #0080ff;
+}
+
+.dot_reject {
+  background-color: #ff4040;
+}
+
+.approve {
+  color: #0080ff;
+}
+
+.reject {
+  color: #ff4040;
+}
+
+.text_container span {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+}
+
+.time {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #a4a1aa;
+}

@@ -3,6 +3,6 @@ body,
 * {
   margin: 0;
   padding: 0;
-  min-height: 1vh;
+  /* min-height: 1vh; 이거 없어도 될 것 같습니다.*/
   box-sizing: border-box;
 }
