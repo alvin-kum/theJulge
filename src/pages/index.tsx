@@ -2,6 +2,7 @@ import { useState } from "react";
 import RecommendedPosts from "@/Sections/RecommendedPosts";
 import AllPosts from "@/Sections/AllPosts";
 import { mockPosts } from "@/data/mockPosts";
+import Header from "@/layouts/Header";
 import Footer from "@/layouts/Footer";
 
 export default function Home() {
@@ -15,9 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <header>
-        <h1>헤더 영역</h1>
-      </header>
+      <Header />
 
       <main>
         <RecommendedPosts />
