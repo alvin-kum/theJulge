@@ -1,0 +1,50 @@
+POST https://bootcamp-api.codeit.kr/api/17-3/the-julge/users
+Content-Type: application/json
+
+{
+  "email": "test12345@codeit.com",
+  "password" : "1q2w3e!",
+  "type" : "employer"
+}
+###
+
+POST https://bootcamp-api.codeit.kr/api/17-3/the-julge/token
+Content-Type: application/json
+
+{
+  "email": "test12345@codeit.com",
+  "password" : "1q2w3e!"
+}
+
+###
+
+GET https://bootcamp-api.codeit.kr/api/17-3/the-julge/users/7532e750-7e7b-4ada-b105-5881f6e45313
+Content-Type: application/json
+
+
+###
+
+PUT https://bootcamp-api.codeit.kr/api/17-3/the-julge/users/7532e750-7e7b-4ada-b105-5881f6e45313
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NTMyZTc1MC03ZTdiLTRhZGEtYjEwNS01ODgxZjZlNDUzMTMiLCJpYXQiOjE3NTY4Mzk5MTV9.TeiBdtqMn2KpLXduGYYqgkRpEOi-QIoltXU6D-9pqzo
+
+{
+  "name": "jh",
+  "phone": "010-1234-5678",
+  "address": "서울시 종로구",
+  "bio": "A"
+}
+
+###
+POST https://bootcamp-api.codeit.kr/api/17-3/the-julge/shops
+Content-Type: application/json
+
+{
+  "name": "string",
+  "category": "한식",
+  "address1": "서울시 종로구",
+  "address2": "string",
+  "description": "string",
+  "imageUrl": "string",
+  "originalHourlyPay": 0
+}
