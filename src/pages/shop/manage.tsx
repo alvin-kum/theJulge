@@ -171,8 +171,40 @@ const EmptyState = styled.div`
 `;
 
 const LoadingState = styled.div`
-  text-align: center;
-  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #ea580c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const LoadingText = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+`;
+
+const LoadingSubText = styled.div`
+  font-size: 14px;
   color: #6b7280;
 `;
 
@@ -347,8 +379,9 @@ export default function ShopManage() {
         <Container>
           <Content>
             <LoadingState>
-              가게 정보를 확인하고 있습니다...
-              {shopId && <div>Shop ID: {shopId}</div>}
+              <LoadingSpinner />
+              <LoadingText>가게 정보 확인 중</LoadingText>
+              <LoadingSubText>잠시만 기다려주세요</LoadingSubText>
             </LoadingState>
           </Content>
         </Container>
