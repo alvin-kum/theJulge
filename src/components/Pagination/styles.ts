@@ -13,8 +13,8 @@ export const PageButton = styled.button<{ $active?: boolean }>`
   font-size: 12px;
   font-weight: 400;
   color: #000000;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
   border: none;
   background: none;
@@ -30,12 +30,18 @@ export const PageButton = styled.button<{ $active?: boolean }>`
       background-color: #ff8d72;
       color: #ffffff;
     `}
+
+  @media (min-width: 768px) {
+      font-size: 14px;
+      width: 40px;
+      height: 40px;
+    }  
 `;
 
 /* ---------- 이전/다음 버튼 ---------- */
 export const NavButton = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: none;
   cursor: pointer;
@@ -54,4 +60,9 @@ export const NavButton = styled.button`
     cursor: not-allowed;
     opacity: 0.5;
   }
+  
+  @media (min-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }  
 `;

@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const RecommendedSection = styled.section`
   width: 100%;
   min-height: 381px;
-  padding-left: 12px;      /* 왼쪽 여백 고정 */
+  padding: 40px 12px;      /* 왼쪽 여백 고정 */
   background-color: #FFEBE7;
 
   display: flex;
@@ -13,20 +13,18 @@ export const RecommendedSection = styled.section`
   
   @media (min-width: 768px) {
     min-height: 535px;
-    padding-left: 60px;         /* 데스크탑 왼쪽 여백 고정 */
+    padding: 60px;      /* 왼쪽 여백 고정 */
   }
 `;
 
 export const Container = styled.div`
   width: 100%;
-  margin: 0 auto;
-  
   display: flex;
   flex-direction: column;
   gap: 24px; /* 제목과 카드 간격 */
 
   @media (min-width: 768px) {
-    max-width: calc(312px * 3 + 32px); /* 카드 폭 3개 + 최소 gap 2개 */
+    max-width: calc(312px * 3 + 20px); /* 카드 폭 3개 + 최소 gap 2개 */
   }
 `;
 

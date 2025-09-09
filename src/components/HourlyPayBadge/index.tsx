@@ -1,11 +1,12 @@
 import React from "react";
 import { BadgeWrapper } from "./styles";
 
-interface WageBadgeProps {
+interface HourlyPayBadgeProps {
   percentage: number;
+  isClosed?: boolean;
 }
 
-const WageBadge: React.FC<WageBadgeProps> = ({ percentage }) => {
+const HourlyPayBadge: React.FC<HourlyPayBadgeProps> = ({ percentage, isClosed = false }) => {
   if (percentage <= 0) return null;
 
   // 레벨 계산
@@ -15,11 +16,11 @@ const WageBadge: React.FC<WageBadgeProps> = ({ percentage }) => {
   else level = 3;
 
   return (
-    <BadgeWrapper $level={level}>
+    <BadgeWrapper $level={level} $isClosed={isClosed}>
       {/* 모바일: 레벨별 텍스트 컬러, 데스크탑: 흰색 텍스트 + 배경 */}
       기존 시급보다 {percentage}% ⬆
     </BadgeWrapper>
   );
 };
 
-export default WageBadge;
+export default HourlyPayBadge;

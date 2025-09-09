@@ -5,13 +5,13 @@ export const FooterWrapper = styled.footer`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  background-color: #F2F2F3;
+  background-color: #f2f2f3;
   font-size: 14px;
   font-weight: 400;
-  color: #7D7986;
-  
+  color: #7d7986;
+
   width: 100%;
-  max-width: 100%;       // 화면 확장 시 계속 늘어나도록
+  max-width: 100%; // 화면 확장 시 계속 늘어나도록
   padding: 32px 12px 16px;
   margin-left: auto;
   margin-right: auto;

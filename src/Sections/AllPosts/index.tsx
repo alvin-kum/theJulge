@@ -2,77 +2,101 @@ import { useState, useMemo } from "react";
 import Post from "@/components/Postcard";
 import Dropdown from "@/components/Dropdown";
 import Pagination from "@/components/Pagination";
-import PostGrid from "@/components/PostGrid"; 
+import PostGrid from "@/components/PostGrid";
+import { FilterWrapper } from "@/components/Filter";
 import {
   AllPostsSection,
   Container,
   SectionTitle,
   ControlsWrapper,
   ButtonGroup,
-  FilterButton,
-  FilterModalBackdrop,
-  FilterModalBox,
+  EmptyMessage,
 } from "./styles";
-
-interface PostType {
-  id: number;
-  imageUrl: string;
-  name: string;
-  startTime: string;  
-  endTime: string;    
-  location: string;
-  wage: number;
-  originalHourlyPay: number;
-}
+import type { PostData } from "@/types/shop"; // 통합된 타입 임포트
+import { useRouter } from "next/router";
 
 interface AllPostsProps {
-  currentPosts: PostType[];
-  totalPages: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
+  posts: PostData[]; // 모든 posts 데이터를 받음
 }
 
-export default function AllPosts({
-  currentPosts,
-  totalPages,
-  currentPage,
-  onPageChange,
-}: AllPostsProps) {
+interface FilterState {
+  locations: string[];
+  startDate: string;
+  minWage: number | "";
+}
+
+const POSTS_PER_PAGE = 6;
+
+export default function AllPosts({ posts }: AllPostsProps) {
   const [sortOrder, setSortOrder] = useState("deadline");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<FilterState>({
+    locations: [],
+    startDate: "",
+    minWage: "",
+  });
 
-  /** 근무시간 계산 */
-  const getDuration = (post: PostType) => {
-    const start = new Date(post.startTime);
-    const end = new Date(post.endTime);
-    return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  };
+  const isFilterApplied = useMemo(
+    () =>
+      filters.locations.length > 0 ||
+      filters.startDate !== "" ||
+      filters.minWage !== "",
+    [filters]
+  );
 
-  /** 정렬 */
+  const filteredPosts = useMemo(() => {
+    if (!isFilterApplied) return posts;
+    return posts.filter((post) => {
+      const matchesLocation =
+        filters.locations.length === 0 || filters.locations.includes(post.address1);
+
+      const matchesStartDate =
+        !filters.startDate || new Date(post.startsAt) >= new Date(filters.startDate);
+
+      const matchesMinWage =
+        !filters.minWage || post.hourlyPay >= filters.minWage;
+
+      return matchesLocation && matchesStartDate && matchesMinWage;
+    });
+  }, [posts, filters, isFilterApplied]);
+
   const sortedPosts = useMemo(() => {
-    const postsCopy = [...currentPosts];
+    const postsCopy = [...filteredPosts];
     switch (sortOrder) {
       case "deadline":
         return postsCopy.sort(
-          (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
         );
       case "wage":
-        return postsCopy.sort((a, b) => b.wage - a.wage);
+        return postsCopy.sort((a, b) => b.hourlyPay - a.hourlyPay);
       case "time":
-        return postsCopy.sort((a, b) => getDuration(a) - getDuration(b));
+        return postsCopy.sort((a, b) => a.workhour - b.workhour);
       case "alphabet":
         return postsCopy.sort((a, b) => a.name.localeCompare(b.name, "ko"));
       default:
         return postsCopy;
     }
-  }, [sortOrder, currentPosts]);
+  }, [sortOrder, filteredPosts]);
+
+  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const currentPosts = sortedPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filters, sortOrder]);
+
+  const router = useRouter();
 
   return (
     <AllPostsSection>
       <Container>
         <ControlsWrapper>
           <SectionTitle>전체공고</SectionTitle>
-
           <ButtonGroup>
             <Dropdown
               value={sortOrder}
@@ -84,36 +108,30 @@ export default function AllPosts({
                 { value: "alphabet", label: "가나다순" },
               ]}
             />
-            <FilterButton onClick={() => setIsFilterOpen(true)}>상세필터</FilterButton>
+            <FilterWrapper filters={filters} setFilters={setFilters} />
           </ButtonGroup>
         </ControlsWrapper>
 
-        {/* Post 출력 */}
-        <PostGrid variant="all">
-          {sortedPosts.map((post) => (
-            <Post key={post.id} {...post} />
-          ))}
-        </PostGrid>
+        {currentPosts.length > 0 ? (
+          <PostGrid variant="all">
+            {currentPosts.map((post) => (
+              <Post
+                key={post.id}
+                {...post}
+                onClick={() => router.push(`/shop/${post.id}`)} // shop 상세페이지로 이동
+              />
+            ))}
+          </PostGrid>
+        ) : (
+          // 필터가 적용되었을 때만 "검색결과가 없습니다" 메시지 표시
+          isFilterApplied && <EmptyMessage>조건에 맞는 검색결과가 없습니다😢</EmptyMessage>
+        )}
 
-        {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
-            onPageChange={onPageChange}
+            onPageChange={handlePageChange}
           />
-        )}
-
-        {/* 상세필터 모달 */}
-        <FilterModalBackdrop
-          $open={isFilterOpen}
-          onClick={() => setIsFilterOpen(false)}
-        >
-          <FilterModalBox onClick={(e) => e.stopPropagation()}>
-            <h3>상세 필터</h3>
-            <p>시급 범위, 근무 시간 등 필터 UI</p>
-            <FilterButton onClick={() => setIsFilterOpen(false)}>닫기</FilterButton>
-          </FilterModalBox>
-        </FilterModalBackdrop>
       </Container>
     </AllPostsSection>
   );

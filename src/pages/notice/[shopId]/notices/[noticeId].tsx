@@ -1,6 +1,10 @@
 // src/pages/notice/[id].tsx
+import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import React from "react";
 import styled from "styled-components";
+// import NoticeInfoCard from "@/components/notice/noticeInfoCard";
+import NoticeInfoCard from "../../../../components/notice/noticeInfoCard";
 
 const BREAKPOINTS = {
   mobile: 767, // ≤ 767
@@ -8,27 +12,40 @@ const BREAKPOINTS = {
   // desktop: ≥ 1200
 };
 
-export default function noticeDetailPage() {
-  // ✨ 실제 데이터 대신 화면만 확인 가능한 목업 텍스트/이미지
-  const mock = {
-    title: "도토리 식당 주말 알바 모집",
-    status: "모집중",
-    wage: "15,000원",
-    badge: "시급",
-    image:
-      "https://images.unsplash.com/photo-1533777857889-4bea1a7fcb0d?q=80&w=1600&auto=format&fit=crop",
-    summary: [
-      { label: "근무지역", value: "서울시 마포구" },
-      { label: "근무요일", value: "토, 일" },
-      { label: "근무시간", value: "11:00 ~ 20:00 (휴게 1h)" },
-      { label: "모집인원", value: "2명" },
-    ],
-    description:
-      "홀/서빙 보조, 기본 정리정돈. 성실하고 밝은 분을 찾습니다. 유니폼 지급, 식사 제공.",
-    notice:
-      "초보 가능 / 장기 근무 가능자 우대. 지원 시 간단한 자기소개를 함께 남겨주세요.",
-  };
+// SSR 문제 분리용: 필요 없으면 { ssr: true } 또는 그냥 일반 import로 바꿔도 됩니다.
+// const NoticeInfoCard = dynamic(
+//   () => import("@/components/notice/noticeInfoCard"),
+//   { ssr: true }
+// );
 
+export default function NoticeDetailPage() {
+  // // ✨ 실제 데이터 대신 화면만 확인 가능한 목업 텍스트/이미지
+  // const mock = {
+  //   title: "도토리 식당 주말 알바 모집",
+  //   status: "모집중",
+  //   wage: "15,000원",
+  //   badge: "시급",
+  //   image:
+  //     "https://images.unsplash.com/photo-1533777857889-4bea1a7fcb0d?q=80&w=1600&auto=format&fit=crop",
+  //   summary: [
+  //     { label: "근무지역", value: "서울시 마포구" },
+  //     { label: "근무요일", value: "토, 일" },
+  //     { label: "근무시간", value: "11:00 ~ 20:00 (휴게 1h)" },
+  //     { label: "모집인원", value: "2명" },
+  //   ],
+  //   description:
+  //     "홀/서빙 보조, 기본 정리정돈. 성실하고 밝은 분을 찾습니다. 유니폼 지급, 식사 제공.",
+  //   notice:
+  //     "초보 가능 / 장기 근무 가능자 우대. 지원 시 간단한 자기소개를 함께 남겨주세요.",
+  // };
+
+  const { query } = useRouter();
+  const shopId = typeof query.shopId === "string" ? query.shopId : "";
+  const noticeId = typeof query.noticeId === "string" ? query.noticeId : "";
+
+  if (!shopId || !noticeId)
+    return <div style={{ padding: 24 }}>잘못된 경로</div>;
+  console.log("[page]", { shopId, noticeId });
   const applicants = [
     {
       name: "김지원",
@@ -59,61 +76,9 @@ export default function noticeDetailPage() {
       status: "대기",
     },
   ];
-
   return (
     <Wrap>
-      <HeaderRow>
-        <Breadcrumb>내 공고 &gt; 상세</Breadcrumb>
-        <OwnerActions>
-          <GhostButton>공고 종료</GhostButton>
-          <PrimaryButton>공고 수정</PrimaryButton>
-        </OwnerActions>
-      </HeaderRow>
-
-      <TitleRow>
-        <Title>{mock.title}</Title>
-        <Chip tone="primary">{mock.status}</Chip>
-      </TitleRow>
-
-      <Hero>
-        <Thumb
-          style={{ backgroundImage: `url(${mock.image})` }}
-          role="img"
-          aria-label="공고 이미지"
-        />
-        <HeroMeta>
-          <PriceLine>
-            <Price>
-              {mock.wage}
-              <UnitChip>{mock.badge}</UnitChip>
-            </Price>
-          </PriceLine>
-
-          <KeyValues>
-            {mock.summary.map((s) => (
-              <KV key={s.label}>
-                <K>{s.label}</K>
-                <V>{s.value}</V>
-              </KV>
-            ))}
-          </KeyValues>
-
-          <ActionArea>
-            <PrimaryButton>지원자 관리</PrimaryButton>
-            <GhostButton>공고 미리보기</GhostButton>
-          </ActionArea>
-        </HeroMeta>
-      </Hero>
-
-      <Section>
-        <SectionTitle>업무 내용</SectionTitle>
-        <Paragraph>{mock.description}</Paragraph>
-      </Section>
-
-      <Section>
-        <SectionTitle>유의 사항</SectionTitle>
-        <Paragraph>{mock.notice}</Paragraph>
-      </Section>
+      <NoticeInfoCard shopId={shopId} noticeId={noticeId} />
 
       <Section>
         <SectionTitle>신청자 목록</SectionTitle>
@@ -204,56 +169,13 @@ const Wrap = styled.div`
   --accent: var(--color-accent, #ff6b3d);
   --muted: #6b7280;
   --bg: #ffffff;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 16px 64px;
   color: var(--text);
-`;
-
-const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-`;
-
-const Breadcrumb = styled.div`
-  font-size: 14px;
-  color: var(--muted);
-`;
-
-const OwnerActions = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 8px 0 16px;
-
-  @media (max-width: ${BREAKPOINTS.mobile}px) {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
-  }
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 28px;
-  line-height: 1.25;
-  font-weight: 700;
-
-  @media (max-width: ${BREAKPOINTS.tablet}px) {
-    font-size: 24px;
-  }
-  @media (max-width: ${BREAKPOINTS.mobile}px) {
-    font-size: 20px;
-  }
 `;
 
 const Chip = styled.span<{ tone?: "primary" | "muted" }>`
@@ -269,97 +191,6 @@ const Chip = styled.span<{ tone?: "primary" | "muted" }>`
   background: ${({ tone }) => (tone === "primary" ? "#fff5ef" : "#fff")};
 `;
 
-const Hero = styled.section`
-  display: grid;
-  grid-template-columns: 44% 1fr;
-  gap: 24px;
-  margin-bottom: 28px;
-
-  @media (max-width: ${BREAKPOINTS.tablet}px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const Thumb = styled.div`
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
-  border: 1px solid var(--border);
-`;
-
-const HeroMeta = styled.div`
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-`;
-
-const PriceLine = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const UnitChip = styled.span`
-  display: inline-flex;
-  height: 20px;
-  align-items: center;
-  padding: 0 8px;
-  margin-left: 8px;
-  font-size: 11px;
-  color: #fff;
-  background: var(--accent);
-  border-radius: 6px;
-`;
-
-const Price = styled.div`
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--accent);
-
-  @media (max-width: ${BREAKPOINTS.mobile}px) {
-    font-size: 20px;
-  }
-`;
-
-const KeyValues = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
-  margin-top: 16px;
-
-  @media (max-width: ${BREAKPOINTS.mobile}px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const KV = styled.div`
-  display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 8px;
-  font-size: 14px;
-
-  @media (max-width: ${BREAKPOINTS.mobile}px) {
-    grid-template-columns: 84px 1fr;
-    font-size: 13px;
-  }
-`;
-const K = styled.span`
-  color: var(--muted);
-`;
-const V = styled.span`
-  font-weight: 500;
-`;
-
-const ActionArea = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 18px;
-  flex-wrap: wrap;
-`;
-
 const Section = styled.section`
   background: var(--bg);
   border: 1px solid var(--border);
@@ -371,13 +202,6 @@ const Section = styled.section`
 const SectionTitle = styled.h2`
   margin: 0 0 12px;
   font-size: 18px;
-`;
-
-const Paragraph = styled.p`
-  margin: 0;
-  line-height: 1.6;
-  color: #374151;
-  white-space: pre-line;
 `;
 
 const ApplicantsCard = styled.div`
