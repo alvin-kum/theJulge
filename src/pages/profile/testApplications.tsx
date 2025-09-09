@@ -1,6 +1,5 @@
 // src/pages/profile/test-applications.tsx
 import { useRouter } from "next/router";
-import CustomHeader from "@/components/gnb/CustomHeader";
 import {
   Wrapper,
   Container,
@@ -69,7 +68,6 @@ export default function TestApplicationsPage() {
 
   return (
     <Wrapper>
-      <CustomHeader />
 
       <Container>
         <ProfileSection>
@@ -152,19 +150,7 @@ export default function TestApplicationsPage() {
         </ProfileSection>
       </Container>
 
-      <footer
-        style={{
-          marginTop: 40,
-          textAlign: "center",
-          color: "#999",
-          height: "100px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        ⓒcodeit - 2023 | Privacy Policy | FAQ
-      </footer>
+
     </Wrapper>
   );
 }

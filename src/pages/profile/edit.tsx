@@ -10,10 +10,10 @@ import {
   ButtonWrapper,
   SubmitButton,
   Label,
+  CloseButton, 
 } from "../../styles/profileEdit.styles";
 
 import Modal from "../../components/Modal";
-import CustomHeader from "../../components/gnb/CustomHeader";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";
 
 export default function ProfileEditPage() {
@@ -75,9 +75,10 @@ export default function ProfileEditPage() {
 
   return (
     <PageWrapper>
-      <CustomHeader />
-
+      
       <ProfileContainer>
+        <CloseButton onClick={() => router.push("/profile")}>×</CloseButton>
+
         <Title>내 프로필</Title>
 
         <FormRow>
