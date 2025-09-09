@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface Shop {
   id: string;
@@ -13,7 +13,7 @@ export interface Shop {
     item: {
       id: string;
       email: string;
-      type: 'employer' | 'employee';
+      type: "employer" | "employee";
       name?: string;
       phone?: string;
       address?: string;
@@ -55,13 +55,13 @@ export interface NoticeFormData {
 
 export interface Application {
   id: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'canceled';
+  status: "pending" | "accepted" | "rejected" | "canceled";
   createdAt: string;
   user: {
     item: {
       id: string;
       email: string;
-      type: 'employer' | 'employee';
+      type: "employer" | "employee";
       name?: string;
       phone?: string;
       address?: string;
@@ -81,7 +81,7 @@ export interface Application {
 
 // 가게 등록
 export const createShop = (data: ShopFormData) => {
-  return apiClient.post<{ item: Shop }>('/shops', data);
+  return apiClient.post<{ item: Shop }>("/shops", data);
 };
 
 // 가게 정보 조회
@@ -95,11 +95,14 @@ export const updateShop = (shopId: string, data: ShopFormData) => {
 };
 
 // 가게의 공고 목록 조회
-export const getShopNotices = (shopId: string, params?: { offset?: number; limit?: number }) => {
+export const getShopNotices = (
+  shopId: string,
+  params?: { offset?: number; limit?: number }
+) => {
   const query = new URLSearchParams();
-  if (params?.offset) query.append('offset', params.offset.toString());
-  if (params?.limit) query.append('limit', params.limit.toString());
-  
+  if (params?.offset) query.append("offset", params.offset.toString());
+  if (params?.limit) query.append("limit", params.limit.toString());
+
   return apiClient.get<{
     items: { item: Notice }[];
     offset: number;
@@ -116,20 +119,33 @@ export const createNotice = (shopId: string, data: NoticeFormData) => {
 
 // 가게의 특정 공고 조회
 export const getShopNotice = (shopId: string, noticeId: string) => {
-  return apiClient.get<{ item: Notice }>(`/shops/${shopId}/notices/${noticeId}`);
+  return apiClient.get<{ item: Notice }>(
+    `/shops/${shopId}/notices/${noticeId}`
+  );
 };
 
 // 가게의 특정 공고 수정
-export const updateNotice = (shopId: string, noticeId: string, data: NoticeFormData) => {
-  return apiClient.put<{ item: Notice }>(`/shops/${shopId}/notices/${noticeId}`, data);
+export const updateNotice = (
+  shopId: string,
+  noticeId: string,
+  data: NoticeFormData
+) => {
+  return apiClient.put<{ item: Notice }>(
+    `/shops/${shopId}/notices/${noticeId}`,
+    data
+  );
 };
 
 // 가게의 특정 공고의 지원 목록 조회
-export const getNoticeApplications = (shopId: string, noticeId: string, params?: { offset?: number; limit?: number }) => {
+export const getNoticeApplications = (
+  shopId: string,
+  noticeId: string,
+  params?: { offset?: number; limit?: number }
+) => {
   const query = new URLSearchParams();
-  if (params?.offset) query.append('offset', params.offset.toString());
-  if (params?.limit) query.append('limit', params.limit.toString());
-  
+  if (params?.offset) query.append("offset", params.offset.toString());
+  if (params?.limit) query.append("limit", params.limit.toString());
+
   return apiClient.get<{
     items: { item: Application }[];
     offset: number;
@@ -141,10 +157,10 @@ export const getNoticeApplications = (shopId: string, noticeId: string, params?:
 
 // 지원 상태 변경 (승인/거절/취소)
 export const updateApplicationStatus = (
-  shopId: string, 
-  noticeId: string, 
-  applicationId: string, 
-  status: 'accepted' | 'rejected' | 'canceled'
+  shopId: string,
+  noticeId: string,
+  applicationId: string,
+  status: "accepted" | "rejected" | "canceled"
 ) => {
   return apiClient.put<{ item: Application }>(
     `/shops/${shopId}/notices/${noticeId}/applications/${applicationId}`,
