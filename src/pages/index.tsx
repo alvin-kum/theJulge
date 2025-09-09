@@ -1,7 +1,7 @@
 // pages/index.tsx
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/footer";
 import RecommendedPosts from "@/Sections/RecommendedPosts";
 import AllPosts from "@/Sections/AllPosts";
 import { listNotices } from "@/lib/api/notice";
@@ -13,7 +13,7 @@ import {
   ErrorContainer,
   ErrorText,
   RetryButton,
-} from "@/styles/StatusMessageStyles"; 
+} from "@/styles/StatusMessageStyles";
 
 type ListNoticesResponse = {
   offset: number;
