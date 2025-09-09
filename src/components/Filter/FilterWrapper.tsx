@@ -47,6 +47,7 @@ export default function FilterWrapper({
       <FilterButtonComponent
         appliedCount={getAppliedFilterCount()}
         onClick={handleToggle}
+        isModalOpen={isOpen}
       />
 
       <DetailedFilter

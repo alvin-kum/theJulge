@@ -13,6 +13,7 @@ export const PostCard = styled.div`
   background-color: #ffffff;
   padding: 12px;
   gap: 12px;
+  cursor: pointer;
 
   @media (min-width: 768px) {
       height: 348px;

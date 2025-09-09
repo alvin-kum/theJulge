@@ -107,6 +107,7 @@ export const LocationTag = styled.span`
   padding: 6px 10px;
   background: #FFEBE7;
   border-radius: 20px;
+  cursor: pointer;
   
   font-size: 14px;
   font-weight: 700;

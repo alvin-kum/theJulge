@@ -23,6 +23,7 @@ export interface PostProps {
   address1: string;
   hourlyPay: number;
   originalHourlyPay: number;
+  onClick?: () => void;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -33,6 +34,7 @@ const Post: React.FC<PostProps> = ({
   address1 = "",
   hourlyPay = 0,
   originalHourlyPay = 0,
+  onClick,
 }) => {
   /** 시작일 Date 객체 (UTC 대신 로컬 기준으로 파싱) */
   const startDate = new Date(startsAt.replace("Z", ""));
@@ -68,7 +70,7 @@ const Post: React.FC<PostProps> = ({
     : 0;
 
   return (
-    <PostCard>
+    <PostCard onClick={onClick}>
       <ImageWrapper>
         <PostImage src={imageUrl} alt={name} />
         {isClosed && <ClosedOverlay>마감 완료</ClosedOverlay>}
