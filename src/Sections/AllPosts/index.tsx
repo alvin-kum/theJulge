@@ -127,13 +127,11 @@ export default function AllPosts({ posts }: AllPostsProps) {
           isFilterApplied && <EmptyMessage>조건에 맞는 검색결과가 없습니다😢</EmptyMessage>
         )}
 
-        {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={handlePageChange}
           />
-        )}
       </Container>
     </AllPostsSection>
   );
