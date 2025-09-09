@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import dynamic from 'next/dynamic';
-import React from 'react';
-=======
 import React from "react";
 import {
   PostCard,
@@ -17,51 +13,11 @@ import {
   ClosedOverlay,
 } from "./styles";
 import HourlyPayBadge from "@/components/HourlyPayBadge";
->>>>>>> JHY
 
 export interface PostProps {
   id: number;
   imageUrl: string;
   name: string;
-<<<<<<< HEAD
-  startTime: string;
-  endTime: string;
-  location: string;
-  wage: number;
-  originalHourlyPay: number;
-  duration?: number;
-}
-
-// ✅ 클라이언트에서만 렌더링되는 PostCard
-const PostCardClient = dynamic(
-  () => import('./PostCardClient'),
-  {
-    ssr: false,
-    loading: () => (
-      <div 
-        style={{ 
-          width: '100%', 
-          height: '200px', 
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #e9ecef',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#6c757d'
-        }}
-      >
-        <div>
-          <div>📋 카드 로딩 중...</div>
-        </div>
-      </div>
-    )
-  }
-);
-
-const Post: React.FC<PostProps> = (props) => {
-  return <PostCardClient {...props} />;
-=======
   startsAt: string;     // "2025-01-02T15:00:00"
   workhour: number;     // 근무 시간(숫자)
   address1: string;
@@ -160,7 +116,6 @@ const Post: React.FC<PostProps> = ({
       </PostContent>
     </PostCard>
   );
->>>>>>> JHY
 };
 
 export default Post;
