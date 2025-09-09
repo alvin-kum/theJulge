@@ -1,8 +1,9 @@
 .header {
   margin: 0 auto;
-  padding: 15px 208px;
+  padding: 15px 5%;
   display: flex;
-  width: 1440px;
+  width: 100%;
+  max-width: 1440px;
   height: 70px;
 
   background-color: white;
@@ -16,11 +17,15 @@
 
 .search-container {
   margin-left: 43px;
+  width: 100%;
+  max-width: 450px;
+  margin-right: 10px;
   position: relative;
 }
 
 .search-input {
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
   padding: 10px 10px 10px 40px;
   border: none;
   border-radius: 10px;
@@ -57,10 +62,17 @@
 
 .right-first-btn,
 .right-second-btn {
+  color: #111322;
   font-size: 16px;
   font-weight: 700;
   line-height: 20px;
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.modal_container {
+  position: relative;
 }
 
 .alert-icon {
@@ -69,18 +81,22 @@
   cursor: pointer;
 }
 
+.modal {
+  position: absolute;
+  width: 368px;
+  max-height: 419px;
+  top: 30px;
+  right: 0;
+  z-index: 99;
+}
+
 @media screen and (max-width: 744px) {
   .header {
     padding: 15px 32px;
-    width: 744px;
   }
 
   .search-container {
     margin-left: 32px;
-  }
-
-  .search-input {
-    width: 344px;
   }
 
   .nav-right-btn-container {
@@ -117,7 +133,6 @@
   }
 
   .search-input {
-    width: 335px;
     padding: 8px 8px 8px 32px;
   }
 
@@ -140,5 +155,19 @@
   .right-first-btn,
   .right-second-btn {
     font-size: 14px;
+  }
+
+  .modal_container {
+    position: inherit;
+  }
+
+  .modal {
+    max-height: 100vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
   }
 }

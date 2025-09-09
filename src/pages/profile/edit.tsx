@@ -12,8 +12,8 @@ import {
   Label,
 } from "../../styles/profileEdit.styles";
 
-import Modal from "@/components/Modal";
-import CustomHeader from "@/components/gnb/CustomHeader";
+import Modal from "../../components/Modal";
+import CustomHeader from "../../components/gnb/CustomHeader";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";
 
 export default function ProfileEditPage() {

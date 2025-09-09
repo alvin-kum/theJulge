@@ -6,8 +6,7 @@ import { apiClient, ApiError } from "@/lib/api/client";
 
 const Container = styled.div`
   min-height: 100vh;
-  background: #fafafa;
-  padding-top: 80px;
+  background: #fff;
 `;
 
 const Content = styled.div`
@@ -172,8 +171,40 @@ const EmptyState = styled.div`
 `;
 
 const LoadingState = styled.div`
-  text-align: center;
-  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #ea580c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const LoadingText = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+`;
+
+const LoadingSubText = styled.div`
+  font-size: 14px;
   color: #6b7280;
 `;
 
@@ -211,7 +242,6 @@ export default function ShopManage() {
   useEffect(() => {
     const getShopId = async () => {
       try {
-        // URL에서 shop ID 가져오기
         const urlShopId = router.query.id as string;
 
         if (urlShopId) {
@@ -219,7 +249,6 @@ export default function ShopManage() {
           setShopId(urlShopId);
         } else {
           console.log("/shops/my API 호출 시작");
-          // URL에 ID가 없으면 안전한 API 호출로 내 가게 확인
           const { data: response, error: apiError } = await apiClient.safeGet(
             "/shops/my",
             1
@@ -266,13 +295,11 @@ export default function ShopManage() {
       try {
         setLoading(true);
 
-        // 가게 정보 가져오기
         console.log(`/shops/${shopId} API 호출`);
         const shopResponse = await apiClient.get(`/shops/${shopId}`);
         console.log("가게 정보 응답:", shopResponse);
         setShopData(shopResponse.item);
 
-        // 가게의 공고 목록 가져오기
         try {
           console.log(`/shops/${shopId}/notices API 호출`);
           const noticeResponse = await apiClient.get(
@@ -282,7 +309,6 @@ export default function ShopManage() {
           setNotices(noticeResponse.items || []);
         } catch (noticeError) {
           console.error("가게 공고 목록 가져오기 실패:", noticeError);
-          // 가게별 공고 API가 없으면 전체 공고에서 필터링
           try {
             console.log("전체 공고 목록으로 대체 시도");
             const allNoticesResponse = await apiClient.get("/notices");
@@ -299,7 +325,6 @@ export default function ShopManage() {
       } catch (error) {
         console.error("가게 정보 가져오기 실패:", error);
         alert("가게 정보를 불러올 수 없습니다.");
-        // 가게 정보를 가져올 수 없으면 shop 페이지로 리다이렉트
         router.replace("/shop");
       } finally {
         setLoading(false);
@@ -348,11 +373,15 @@ export default function ShopManage() {
   if (loading) {
     return (
       <>
+        <Head>
+          <title>가게 관리 - THE JULGE</title>
+        </Head>
         <Container>
           <Content>
             <LoadingState>
-              가게 정보를 확인하고 있습니다...
-              {shopId && <div>Shop ID: {shopId}</div>}
+              <LoadingSpinner />
+              <LoadingText>가게 정보 확인 중</LoadingText>
+              <LoadingSubText>잠시만 기다려주세요</LoadingSubText>
             </LoadingState>
           </Content>
         </Container>
@@ -363,6 +392,9 @@ export default function ShopManage() {
   if (!shopData) {
     return (
       <>
+        <Head>
+          <title>가게 관리 - THE JULGE</title>
+        </Head>
         <Container>
           <Content>
             <EmptyState>
@@ -383,7 +415,6 @@ export default function ShopManage() {
         <title>{shopData.name} 관리 - THE JULGE</title>
         <meta name="description" content="가게 정보 및 공고를 관리하세요" />
       </Head>
-      <NavBar />
       <Container>
         <Content>
           <Header>

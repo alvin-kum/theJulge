@@ -18,15 +18,8 @@ export const authAxios = axios.create({
 
 authAxios.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
-
-  // headers가 undefined일 수 있으므로 초기화
-  if (!config.headers) {
-    config.headers = {};
-  }
-
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });

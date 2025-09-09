@@ -16,7 +16,7 @@ import {
   UserTypeButton,
   CheckCircle,
 } from "../styles/signup.styles";
-import Modal from "@/components/Modal"; // 공통 모달 import
+import Modal from "../components/Modal"; // 공통 모달 import
 
 export default function SignupPage() {
   const router = useRouter();

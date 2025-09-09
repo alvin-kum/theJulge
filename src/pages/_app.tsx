@@ -1,8 +1,15 @@
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 import Head from "next/head";
-import { GlobalStyle } from "../styles/globalStyles";
+import PageLayout from "@/components/layout/PageLayout";
+import GlobalStyle from "@/styles/GlobalStyle";
+
+const NO_LAYOUT = ["/login", "/signup"];
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { pathname } = useRouter();
+  const content = <Component {...pageProps} />;
+
   return (
     <>
       {/* 🔹 기본 SEO / 메타태그 */}
@@ -33,7 +40,10 @@ export default function App({ Component, pageProps }: AppProps) {
           content="맞춤형 매칭 플랫폼으로 사람과 서비스, 기업과 인재를 빠르고 정확하게 연결합니다."
         />
         <meta property="og:url" content="https://www.example.com" />
-        <meta property="og:image" content="https://www.example.com/og-image.png" />
+        <meta
+          property="og:image"
+          content="https://www.example.com/og-image.png"
+        />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -42,12 +52,19 @@ export default function App({ Component, pageProps }: AppProps) {
           name="twitter:description"
           content="맞춤형 매칭 플랫폼으로 사람과 서비스, 기업과 인재를 빠르고 정확하게 연결합니다."
         />
-        <meta name="twitter:image" content="https://www.example.com/og-image.png" />
+        <meta
+          name="twitter:image"
+          content="https://www.example.com/og-image.png"
+        />
       </Head>
 
       {/* 글로벌 스타일 + 페이지 */}
       <GlobalStyle />
-      <Component {...pageProps} />
+      {NO_LAYOUT.includes(pathname) ? (
+        content
+      ) : (
+        <PageLayout>{content}</PageLayout>
+      )}
     </>
   );
 }

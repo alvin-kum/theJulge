@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import CustomHeader from "@/components/gnb/CustomHeader";
+import CustomHeader from "../../components/gnb/CustomHeader";
 import {
   Wrapper,
   Container,

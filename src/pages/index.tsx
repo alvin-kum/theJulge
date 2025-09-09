@@ -2,7 +2,7 @@ import { useState } from "react";
 import RecommendedPosts from "@/Sections/RecommendedPosts";
 import AllPosts from "@/Sections/AllPosts";
 import { mockPosts } from "@/data/mockPosts";
-import Header from "@/components/Header";
+import CustomHeader from "@/components/gnb/CustomHeader";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -16,8 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <Header />
-
+    
       <main>
         <RecommendedPosts />
         <AllPosts
@@ -28,7 +27,6 @@ export default function Home() {
         />
       </main>
 
-      <Footer />
     </>
   );
 }
