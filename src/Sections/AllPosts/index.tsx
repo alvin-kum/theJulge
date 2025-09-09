@@ -3,7 +3,7 @@ import Post from "@/components/Postcard";
 import Dropdown from "@/components/Dropdown";
 import Pagination from "@/components/Pagination";
 import PostGrid from "@/components/PostGrid";
-import { FilterWrapper } from "@/components/Filter"; // FilterWrapper로 통합
+import { FilterWrapper } from "@/components/Filter";
 import {
   AllPostsSection,
   Container,
@@ -12,13 +12,11 @@ import {
   ButtonGroup,
   EmptyMessage,
 } from "./styles";
-import type { PostProps } from "@/components/Postcard"; 
+import type { PostData } from "@/types/shop"; // 통합된 타입 임포트
+import { useRouter } from "next/router";
 
 interface AllPostsProps {
-  currentPosts: PostProps[];
-  totalPages: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
+  posts: PostData[]; // 모든 posts 데이터를 받음
 }
 
 interface FilterState {
@@ -27,13 +25,11 @@ interface FilterState {
   minWage: number | "";
 }
 
-export default function AllPosts({
-  currentPosts,
-  totalPages,
-  currentPage,
-  onPageChange,
-}: AllPostsProps) {
+const POSTS_PER_PAGE = 6;
+
+export default function AllPosts({ posts }: AllPostsProps) {
   const [sortOrder, setSortOrder] = useState("deadline");
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     locations: [],
     startDate: "",
@@ -48,22 +44,9 @@ export default function AllPosts({
     [filters]
   );
 
-  const appliedFilterCount = useMemo(() => {
-    let count = 0;
-    if (filters.locations.length > 0) count += 1;
-    if (filters.startDate !== "") count += 1;
-    if (filters.minWage !== "") count += 1;
-    return count;
-  }, [filters]);
-
-  // 근무시간 가져오기
-  const getDuration = (post: PostProps) => {
-    return post.workhour; // 숫자 타입이므로 그대로 리턴
-  };
-
   const filteredPosts = useMemo(() => {
-    if (!isFilterApplied) return currentPosts;
-    return currentPosts.filter((post) => {
+    if (!isFilterApplied) return posts;
+    return posts.filter((post) => {
       const matchesLocation =
         filters.locations.length === 0 || filters.locations.includes(post.address1);
 
@@ -75,20 +58,19 @@ export default function AllPosts({
 
       return matchesLocation && matchesStartDate && matchesMinWage;
     });
-  }, [currentPosts, filters, isFilterApplied]);
+  }, [posts, filters, isFilterApplied]);
 
   const sortedPosts = useMemo(() => {
     const postsCopy = [...filteredPosts];
     switch (sortOrder) {
       case "deadline":
         return postsCopy.sort(
-          (a, b) =>
-            new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+          (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
         );
       case "wage":
         return postsCopy.sort((a, b) => b.hourlyPay - a.hourlyPay);
       case "time":
-        return postsCopy.sort((a, b) => getDuration(a) - getDuration(b));
+        return postsCopy.sort((a, b) => a.workhour - b.workhour);
       case "alphabet":
         return postsCopy.sort((a, b) => a.name.localeCompare(b.name, "ko"));
       default:
@@ -96,12 +78,25 @@ export default function AllPosts({
     }
   }, [sortOrder, filteredPosts]);
 
+  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const currentPosts = sortedPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filters, sortOrder]);
+
+  const router = useRouter();
+
   return (
     <AllPostsSection>
       <Container>
         <ControlsWrapper>
           <SectionTitle>전체공고</SectionTitle>
-
           <ButtonGroup>
             <Dropdown
               value={sortOrder}
@@ -113,29 +108,30 @@ export default function AllPosts({
                 { value: "alphabet", label: "가나다순" },
               ]}
             />
-
-            {/* FilterWrapper로 통합 */}
             <FilterWrapper filters={filters} setFilters={setFilters} />
           </ButtonGroup>
         </ControlsWrapper>
 
-        {sortedPosts.length > 0 ? (
+        {currentPosts.length > 0 ? (
           <PostGrid variant="all">
-            {sortedPosts.map((post) => (
-              <Post key={post.id} {...post} />
+            {currentPosts.map((post) => (
+              <Post
+                key={post.id}
+                {...post}
+                onClick={() => router.push(`/shop/${post.id}`)} // shop 상세페이지로 이동
+              />
             ))}
           </PostGrid>
         ) : (
-          <EmptyMessage>조건에 맞는 검색결과가 없습니다😢</EmptyMessage>
+          // 필터가 적용되었을 때만 "검색결과가 없습니다" 메시지 표시
+          isFilterApplied && <EmptyMessage>조건에 맞는 검색결과가 없습니다😢</EmptyMessage>
         )}
 
-        {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
-            onPageChange={onPageChange}
+            onPageChange={handlePageChange}
           />
-        )}
       </Container>
     </AllPostsSection>
   );

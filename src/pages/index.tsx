@@ -1,32 +1,83 @@
-import { useState } from "react";
+// pages/index.tsx
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/footer";
 import RecommendedPosts from "@/Sections/RecommendedPosts";
 import AllPosts from "@/Sections/AllPosts";
-import { mockPosts } from "@/data/mockPosts";
-import CustomHeader from "@/components/gnb/CustomHeader";
-import Footer from "@/components/Footer";
+import { listNotices } from "@/lib/api/notice";
+import { transformNoticeToPostData, NoticeItem } from "@/utils/transformers";
+import type { PostData } from "@/types/shop";
 
-export default function Home() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 6;
+import {
+  LoadingMessage,
+  ErrorContainer,
+  ErrorText,
+  RetryButton,
+} from "@/styles/StatusMessageStyles";
 
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = mockPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(mockPosts.length / postsPerPage);
+type ListNoticesResponse = {
+  offset: number;
+  limit: number;
+  count: number;
+  hasNext: boolean;
+  items: { item: NoticeItem }[];
+};
+
+export default function HomePage() {
+  const [posts, setPosts] = useState<PostData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [offset, setOffset] = useState(0);
+  const [hasNext, setHasNext] = useState(true);
+  const limit = 20;
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res: ListNoticesResponse = await listNotices({ offset, limit });
+      const newPosts: PostData[] = res.items.map(({ item }) =>
+        transformNoticeToPostData(item)
+      );
+      setPosts((prev) => [...prev, ...newPosts]);
+      setHasNext(res.hasNext);
+    } catch (err: any) {
+      console.error(err);
+      setError("공고를 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [offset]);
 
   return (
     <>
-    
+      <Header />
       <main>
-        <RecommendedPosts />
-        <AllPosts
-          currentPosts={currentPosts}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
-      </main>
+        <RecommendedPosts posts={posts.slice(0, 3)} />
+        <AllPosts posts={posts} />
 
+        {/* 로딩 / 에러 메시지 */}
+        {loading && <LoadingMessage>Loading...</LoadingMessage>}
+        {error && (
+          <ErrorContainer>
+            <ErrorText>{error}</ErrorText>
+            <RetryButton
+              onClick={() => {
+                setError(null);
+                setOffset(0);
+                setPosts([]);
+                fetchPosts();
+              }}
+            >
+              다시 시도
+            </RetryButton>
+          </ErrorContainer>
+        )}
+      </main>
     </>
   );
 }

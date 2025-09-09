@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+import dynamic from 'next/dynamic';
+import React from 'react';
+=======
 import React from "react";
 import {
   PostCard,
@@ -13,16 +17,57 @@ import {
   ClosedOverlay,
 } from "./styles";
 import HourlyPayBadge from "@/components/HourlyPayBadge";
+>>>>>>> JHY
 
 export interface PostProps {
   id: number;
   imageUrl: string;
   name: string;
+<<<<<<< HEAD
+  startTime: string;
+  endTime: string;
+  location: string;
+  wage: number;
+  originalHourlyPay: number;
+  duration?: number;
+}
+
+// ✅ 클라이언트에서만 렌더링되는 PostCard
+const PostCardClient = dynamic(
+  () => import('./PostCardClient'),
+  {
+    ssr: false,
+    loading: () => (
+      <div 
+        style={{ 
+          width: '100%', 
+          height: '200px', 
+          backgroundColor: '#f8f9fa',
+          border: '1px solid #e9ecef',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#6c757d'
+        }}
+      >
+        <div>
+          <div>📋 카드 로딩 중...</div>
+        </div>
+      </div>
+    )
+  }
+);
+
+const Post: React.FC<PostProps> = (props) => {
+  return <PostCardClient {...props} />;
+=======
   startsAt: string;     // "2025-01-02T15:00:00"
   workhour: number;     // 근무 시간(숫자)
   address1: string;
   hourlyPay: number;
   originalHourlyPay: number;
+  onClick?: () => void;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -33,6 +78,7 @@ const Post: React.FC<PostProps> = ({
   address1 = "",
   hourlyPay = 0,
   originalHourlyPay = 0,
+  onClick,
 }) => {
   /** 시작일 Date 객체 (UTC 대신 로컬 기준으로 파싱) */
   const startDate = new Date(startsAt.replace("Z", ""));
@@ -68,7 +114,7 @@ const Post: React.FC<PostProps> = ({
     : 0;
 
   return (
-    <PostCard>
+    <PostCard onClick={onClick}>
       <ImageWrapper>
         <PostImage src={imageUrl} alt={name} />
         {isClosed && <ClosedOverlay>마감 완료</ClosedOverlay>}
@@ -114,6 +160,7 @@ const Post: React.FC<PostProps> = ({
       </PostContent>
     </PostCard>
   );
+>>>>>>> JHY
 };
 
 export default Post;
