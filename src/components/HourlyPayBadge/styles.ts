@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 interface BadgeWrapperProps {
   $level: number;
+  $isClosed?: boolean;
 }
 
 export const BadgeWrapper = styled.span<BadgeWrapperProps>`
@@ -15,10 +16,12 @@ export const BadgeWrapper = styled.span<BadgeWrapperProps>`
   padding: 0;
 
   /* 모바일 텍스트 색상 레벨별 적용 */
-  color: ${({ $level }) =>
-    $level === 1 ? "#FFAF9B" :
-    $level === 2 ? "#FF8D72" :
-    $level === 3 ? "#FF4040" : "#FF4040"};
+  color: ${({ $level, $isClosed }) =>
+    $isClosed
+      ? "#E5E4E7"  
+      : $level === 1 ? "#FFAF9B" 
+      : $level === 2 ? "#FF8D72" 
+      : "#FF4040"};
 
   @media (min-width: 768px) {
     justify-content: center; /* 데스크탑: 가운데 정렬 */
@@ -32,10 +35,12 @@ export const BadgeWrapper = styled.span<BadgeWrapperProps>`
     padding: 0 12px;
 
     /* 데스크탑: 레벨별 배경 + 흰색 텍스트 */
-    background-color: ${({ $level }) =>
-      $level === 1 ? "#FFAF9B" :
-      $level === 2 ? "#FF8D72" :
-      $level === 3 ? "#FF4040" : "transparent"};
+    background-color: ${({ $level, $isClosed }) =>
+      $isClosed
+        ? "#E5E4E7"  // 모든 레벨에 대해 동일한 색상
+        : $level === 1 ? "#FFAF9B"
+        : $level === 2 ? "#FF8D72" 
+        : $level === 3 ? "#FF4040" : "transparent"};
     color: #ffffff;
   }
 `;

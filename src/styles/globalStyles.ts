@@ -15,6 +15,16 @@ export const GlobalStyle = createGlobalStyle`
     line-height: 1.5;
   }
 
+  body.modal-open {
+    overflow: hidden;
+    -ms-overflow-style: none;  /* IE, Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  body.modal-open::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
+
   a {
     text-decoration: none;
     color: inherit;

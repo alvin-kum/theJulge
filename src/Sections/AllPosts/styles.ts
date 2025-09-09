@@ -19,7 +19,7 @@ export const Container = styled.div`
   gap: 16px;               // 내부 요소 간 간격
 
   @media (min-width: 768px) {
-    max-width: calc(312px * 3 + 40px);
+    max-width: calc(312px * 3 + 20px);
     gap: 40px;               // 내부 요소 간 간격
   }
 `;
@@ -58,50 +58,19 @@ export const ButtonGroup = styled.div`
   align-items: center;
 `;
 
-// 상세필터 버튼
-export const FilterButton = styled.button`
+// 조건에 맞는 검색결과 없음 문구 스타일
+export const EmptyMessage = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  white-space: nowrap;
-  
-  width: fit-content;
-  height: 30px;
-  padding: 12px;
-  border-radius: 5px;
-  background-color: #FF4040;
-  cursor: pointer;
-
+  justify-content: center; /* 가로 중앙 */
+  align-items: center;     /* 세로 중앙 */
+  height: 250px;           /* 높이 고정 */
+  width: 100%;
+  color: #111322;
   font-size: 14px;
-  font-weight: 700;
-  line-height: 100%;
-  color: #FFFFFF;
+  font-weight: 400;
 
-  &:hover {
-    background-color: #FF8D72;
-    color: #FFFFFF;
+  @media (min-width: 768px) {
+    font-size: 18px;
+    height: 350px;
   }
-`;
-
-export const FilterModalBackdrop = styled.div<{ $open: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: ${({ $open }) => ($open ? "block" : "none")};
-  z-index: 999;
-`;
-
-export const FilterModalBox = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  width: 400px;
-  z-index: 1000;
 `;

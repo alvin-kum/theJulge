@@ -1,4 +1,4 @@
-export type UserType = "employer" | "employee";
+export type UserType = 'employer' | 'employee';
 
 export interface SignupResponse {
   item: {
