@@ -1,6 +1,28 @@
 // src/lib/api/notice.ts
 import { plainAxios, authAxios } from "@/lib/axios";
 
+export interface Notice {
+  id: string;
+  hourlyPay: number;
+  startsAt: string;
+  workhour: number;
+  description: string;
+  closed: boolean;
+  shop?: {
+    item: {
+      id: string;
+      name: string;
+      imageUrl: string;
+      address1: string;
+      address2?: string;
+      category?: string;
+      description?: string;
+      originalHourlyPay?: number;
+    };
+    href?: string;
+  };
+}
+
 // 공고 리스트 (공개)
 export async function listNotices(params: {
   offset?: number;
@@ -78,7 +100,9 @@ export async function createShopNotice(
 
 // 특정 공고 상세 (공개)
 export async function getShopNotice(shopId: string, noticeId: string) {
-  const { data } = await plainAxios.get(`/shops/${shopId}/notices/${noticeId}`);
+  const { data } = await plainAxios.get<{ item: Notice }>(
+    `/shops/${shopId}/notices/${noticeId}`
+  );
   return data.item;
 }
 

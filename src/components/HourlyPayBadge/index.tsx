@@ -6,7 +6,10 @@ interface HourlyPayBadgeProps {
   isClosed?: boolean;
 }
 
-const HourlyPayBadge: React.FC<HourlyPayBadgeProps> = ({ percentage, isClosed = false }) => {
+const HourlyPayBadge: React.FC<HourlyPayBadgeProps> = ({
+  percentage,
+  isClosed = false,
+}) => {
   if (percentage <= 0) return null;
 
   // 레벨 계산

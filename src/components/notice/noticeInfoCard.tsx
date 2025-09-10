@@ -1,8 +1,6 @@
 // src/components/NoticeInfo/NoticeInfo.tsx
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import styled from "styled-components";
-import { getShopNotice, type Notice } from "@/lib/api/notice";
+
 import {
   Wrap,
   HeaderBox,
@@ -12,88 +10,91 @@ import {
   ImageBox,
   StyledImage,
   Section,
-  ShopRow,
+  HourBox,
+  AddressBox,
   ContentBox,
   Label,
   Row,
-  Value,
+  Note,
+  Subnote,
   ValueBig,
   CloseNotice,
+  NoticeDescContent,
+  NoticeDescHeader,
+  NoticeDescWrap,
 } from "./noticeInfoCard.styles";
+import Button from "../Button";
+import HourlyPayBadge from "@/components/HourlyPayBadge";
 
 interface Props {
   shopId: string;
   noticeId: string;
+  category?: string;
+  shopName?: string;
+  imageUrl?: string;
+  hourlyPay?: number;
+  originalHourlyPay?: number;
+  isClosed?: boolean;
+  shopDesc?: string;
+  noticeDesc?: string;
+  address?: string;
+  startsAtText?: string;
+  workHourText?: number;
+  // wagePercentage?: number; // 시급 인상률 (예: 10 -> 10%)
 }
 
-function NoticeInfoCard({ shopId, noticeId }: Props) {
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
-  const [notice, setNotice] = useState<Notice | null>(null);
+function NoticeInfoCard({
+  shopId,
+  noticeId,
+  category,
+  shopName,
+  imageUrl,
+  hourlyPay = 0,
+  originalHourlyPay = 0,
+  shopDesc = "",
+  noticeDesc = "",
+  address = "",
+  startsAtText = "",
+  workHourText = 0,
+}: Props) {
+  const applyHandler = () => {
+    console.log("신청하기 클릭");
+  };
+  /** 시작일 Date 객체 (UTC 대신 로컬 기준으로 파싱) */
+  const startDate = new Date(startsAtText.replace("Z", ""));
 
-  // 클라이언트 마운트 여부 (날짜 포맷 SSR 불일치 방지)
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  /** 종료시간 계산 */
+  const endDate = new Date(startDate.getTime() + workHourText * 60 * 60 * 1000);
 
-  const canFetch = !!shopId && !!noticeId;
+  /** 시작시간 포맷: yyyy-mm-dd HH:mm */
+  const formatStartDateTime = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
 
-  useEffect(() => {
-    // if (!canFetch) return;
-    if (!shopId || !noticeId) return;
-    (async () => {
-      try {
-        setLoading(true);
-        const item = await getShopNotice(shopId, noticeId);
-        setNotice(item);
+  /** 종료시간 포맷: HH:mm */
+  const formatEndTime = (date: Date) => {
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    return `${hh}:${min}`;
+  };
 
-        // 콘솔 출력
-        console.log("[NoticeInfoCard] notice:", item);
-        if (item?.shop?.item)
-          console.log("[NoticeInfoCard] shop:", item.shop.item);
-      } catch (e: any) {
-        const msg =
-          e?.response?.data?.message ||
-          e?.message ||
-          "공고 정보를 불러오지 못했습니다.";
-        setErr(String(msg));
-        console.error("[NoticeInfoCard] error:", e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [shopId, noticeId]);
+  /** 근무시간 표시: 정수면 소수점 제거, 소수면 1자리 */
+  const formatDuration = (hours: number) =>
+    hours % 1 === 0 ? `${hours}시간` : `${Number(hours).toFixed(1)}시간`;
 
-  // 표시용 파생값
-  const shopItem = notice?.shop?.item;
-  const category = shopItem?.category ?? "분류";
-  const shopName = shopItem?.name ?? "가게명";
-  const imageUrl =
-    shopItem?.imageUrl || "https://placehold.co/800x600?text=No+Image";
-  const hourlyPay = notice?.hourlyPay ?? 0;
-  const isClosed = notice?.closed ?? false;
-  const desc = notice?.description ?? "";
-  const address = [shopItem?.address1, shopItem?.address2]
-    .filter(Boolean)
-    .join(" ");
+  const isClosed = startDate < new Date();
 
-  // 날짜/시간 포맷 (mounted 이후에만 렌더)
-  const startsAtText =
-    mounted && notice?.startsAt ? formatKST(notice.startsAt) : ""; // 초기렌더엔 빈 문자열로 SSR/CSR 동일 유지
-
-  const workhourText =
-    notice?.workhour != null ? `${notice.workhour}시간` : "-";
-  if (err) return <p>{err}</p>;
-  if (!notice) return <p>불러오는 중...</p>;
-
+  const hourlyPayPercentage = originalHourlyPay
+    ? Math.round(((hourlyPay - originalHourlyPay) / originalHourlyPay) * 100)
+    : 0;
+  console.log({ hourlyPayPercentage });
   return (
     <Wrap>
-      {/* {loading ? (
-        <p>불러오는 중...</p>
-      ) : err ? (
-        <p style={{ color: "red" }}>{err}</p>
-      ) : !notice ? (
-        <p>공고가 없습니다.</p>
-      ) : ( */}
       <>
         <HeaderBox>
           <Category>{category}</Category>
@@ -104,8 +105,8 @@ function NoticeInfoCard({ shopId, noticeId }: Props) {
           <ImageBox>
             <StyledImage
               fill
-              src={imageUrl}
-              alt={shopName}
+              src={imageUrl || "/images/default-image.png"}
+              alt={shopName || "가게 이미지"}
               $dimmed={isClosed}
             />
             {isClosed && <CloseNotice>마감 완료</CloseNotice>}
@@ -116,32 +117,51 @@ function NoticeInfoCard({ shopId, noticeId }: Props) {
               <Label>시급</Label>
               <Row>
                 <ValueBig>{hourlyPay.toLocaleString()}원</ValueBig>
+                <HourlyPayBadge
+                  percentage={hourlyPayPercentage}
+                  isClosed={isClosed}
+                />
               </Row>
             </Section>
 
-            <Section>
-              <Label>근무 시작</Label>
-              <Value>{startsAtText || "-"}</Value>
-            </Section>
+            <HourBox>
+              <Image
+                src="/images/Postcard/clock.svg"
+                width={20}
+                height={20}
+                alt="운영시간"
+              />
+              <Subnote>
+                {formatStartDateTime(startDate)} ~ {formatEndTime(endDate)} (
+                {formatDuration(workHourText)})
+              </Subnote>
+              {/* <Subnote>({workhourText})</Subnote> */}
+            </HourBox>
+
+            <AddressBox>
+              <Image
+                src="/images/Postcard/address1.svg"
+                width={20}
+                height={20}
+                alt="운영시간"
+              />
+              <Subnote>{address}</Subnote>
+            </AddressBox>
 
             <Section>
-              <Label>근무 시간</Label>
-              <Value>{workhourText}</Value>
+              <Note>{shopDesc || "설명이 없습니다."}</Note>
             </Section>
-
-            <Section>
-              <Label>주소</Label>
-              <Value>{address || "-"}</Value>
-            </Section>
-
-            <Section>
-              <Label>설명</Label>
-              <Value>{desc || "설명이 없습니다."}</Value>
-            </Section>
+            <Button onClick={applyHandler}>신청하기</Button>
           </ContentBox>
         </InfoBox>
+
+        <NoticeDescWrap>
+          <NoticeDescHeader>공고 설명</NoticeDescHeader>
+          <NoticeDescContent>
+            {noticeDesc || "설명이 없습니다."}
+          </NoticeDescContent>
+        </NoticeDescWrap>
       </>
-      {/* )} */}
     </Wrap>
   );
 }

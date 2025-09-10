@@ -26,23 +26,26 @@ export interface PostProps {
 // ✅ 안전한 날짜 처리 (클라이언트에서만 실행)
 const formatStartDateTime = (startTime: string): string => {
   if (!startTime) return "시간 미정";
-  
+
   try {
     // 잘못된 날짜 보정
     let dateString = startTime;
-    if (dateString.includes('2023-02-31')) {
-      dateString = dateString.replace('2023-02-31', '2023-03-03');
+    if (dateString.includes("2023-02-31")) {
+      dateString = dateString.replace("2023-02-31", "2023-03-03");
     }
-    
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "시간 미정";
-    
-    return date.toLocaleDateString('ko-KR') + ' ' + 
-           date.toLocaleTimeString('ko-KR', { 
-             hour: '2-digit', 
-             minute: '2-digit',
-             hour12: false 
-           });
+
+    return (
+      date.toLocaleDateString("ko-KR") +
+      " " +
+      date.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+    );
   } catch {
     return "시간 미정";
   }
@@ -50,20 +53,20 @@ const formatStartDateTime = (startTime: string): string => {
 
 const formatEndTime = (endTime: string): string => {
   if (!endTime) return "미정";
-  
+
   try {
     let dateString = endTime;
-    if (dateString.includes('2023-02-31')) {
-      dateString = dateString.replace('2023-02-31', '2023-03-03');
+    if (dateString.includes("2023-02-31")) {
+      dateString = dateString.replace("2023-02-31", "2023-03-03");
     }
-    
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "미정";
-    
-    return date.toLocaleTimeString('ko-KR', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
+
+    return date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   } catch {
     return "미정";
@@ -81,9 +84,10 @@ const PostCardClient: React.FC<PostProps> = ({
   originalHourlyPay,
   duration,
 }) => {
-  const wagePercentage = originalHourlyPay > 0
-    ? Math.round(((wage - originalHourlyPay) / originalHourlyPay) * 100)
-    : 0;
+  const wagePercentage =
+    originalHourlyPay > 0
+      ? Math.round(((wage - originalHourlyPay) / originalHourlyPay) * 100)
+      : 0;
 
   const formattedStartTime = formatStartDateTime(startTime);
   const formattedEndTime = formatEndTime(endTime);
@@ -110,7 +114,7 @@ const PostCardClient: React.FC<PostProps> = ({
           </PostDetails>
         </div>
         <PostWageWrapper>
-          <Wage>{wage?.toLocaleString() || '0'}원</Wage>
+          <Wage>{wage?.toLocaleString() || "0"}원</Wage>
           {wagePercentage > 0 && <WageBadge percentage={wagePercentage} />}
         </PostWageWrapper>
       </PostContent>
