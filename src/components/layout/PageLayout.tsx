@@ -1,6 +1,8 @@
 import Header from "@/components/gnb/CustomHeader";
 import Footer from "@/components/Footer";
 import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 const Main = styled.main`
   min-height: calc(100dvh - 120px);
@@ -13,20 +15,51 @@ export default function PageLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState<"employee" | "employer" | null>(
+    null
+  );
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const type = localStorage.getItem("userType") as
+      | "employee"
+      | "employer"
+      | null;
+
+    if (token && type) {
+      setIsLoggedIn(true);
+      setUserType(type);
+    } else {
+      setIsLoggedIn(false);
+      setUserType(null);
+    }
+  }, []);
+
+  const handleLogoutClick = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userType");
+    setIsLoggedIn(false);
+    setUserType(null);
+    router.push("/"); // 로그아웃 후 홈으로 이동
+  };
+
+  const pagename = userType === "employer" ? "내 가게" : "내 프로필";
+  const href = userType === "employer" ? "/shop" : "/profile";
+
   return (
     <>
       <Header
-        isLoggedIn={true} // 로그인 상태
-        href="/mystore"   // 이동할 페이지 경로
-        pagename="내 가게" // 버튼에 표시될 이름
-        handleLogoutClick={() => {
-          console.log("로그아웃 처리"); 
-          // 실제 로그아웃 로직도 여기에
-        }}
+        isLoggedIn={isLoggedIn}
+        href={href}
+        pagename={pagename}
+        handleLogoutClick={handleLogoutClick}
       />
       <Main>{children}</Main>
-
-      <Footer/>
+      <Footer />
     </>
   );
 }

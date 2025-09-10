@@ -52,6 +52,11 @@ export const SectionTitle = styled.h2`
   }
 `;
 
+// 검색페이지> keyword 강조용 span
+export const Highlight = styled.span`
+  color: #EA3C12;
+`;
+
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;        /* 드롭다운과 버튼 간격 */

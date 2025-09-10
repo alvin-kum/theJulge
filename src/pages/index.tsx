@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import CustomHeader from "@/components/gnb/CustomHeader";
 import Footer from "@/components/Footer";
-import RecommendedPosts from "@/Sections/RecommendedPosts";
-import AllPosts from "@/Sections/AllPosts";
+import RecommendedPosts from "@/components/Sections/RecommendedPosts";
+import AllPosts from "@/components/Sections/AllPosts";
 import { listNotices } from "@/lib/api/notice";
 import { transformNoticeToPostData, NoticeItem } from "@/utils/transformers";
 import type { PostData } from "@/types/shop";
