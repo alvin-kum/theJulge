@@ -1,6 +1,6 @@
 // pages/index.tsx
 import { useState, useEffect } from "react";
-import CustomHeader from "@/components/gnb/CustomHeader";
+import CustomHeader from "@/components/Header/Header";
 import Footer from "@/components/Footer";
 import RecommendedPosts from "@/components/Sections/RecommendedPosts";
 import AllPosts from "@/components/Sections/AllPosts";

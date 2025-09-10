@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import CustomHeader from "../../components/gnb/CustomHeader";
 import {
   Wrapper,
   Container,
@@ -31,7 +30,7 @@ import {
   StatusBadge,
   Pagination,
   PageNumber,
-} from "../../styles/profile.styles";
+} from "./profile.styles";
 import { fetchMyInfo, fetchMyApplications } from "../../lib/api/user";
 
 export default function ProfilePage() {
@@ -64,7 +63,6 @@ export default function ProfilePage() {
 
   return (
     <Wrapper>
-      <CustomHeader />
 
       <Container>
         <ProfileSection>

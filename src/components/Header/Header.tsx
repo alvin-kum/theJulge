@@ -1,5 +1,5 @@
 import Image from "next/image";
-import style from "./CustomHeader.module.css";
+import style from "./Header.module.css";
 import NotificationModal from "../NotificationModal/NotificationModal";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
