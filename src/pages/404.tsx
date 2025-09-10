@@ -67,8 +67,8 @@ export default function Custom404() {
         <ErrorCode>404</ErrorCode>
         <ErrorTitle>페이지를 찾을 수 없습니다</ErrorTitle>
         <ErrorDescription>
-          요청하신 페이지가 존재하지 않거나, 이동되었거나, 삭제되었을 수
-          있습니다. 홈페이지로 돌아가서 다시 시도해보세요.
+          요청하신 페이지가 존재하지 않거나, 이동되었거나, 삭제되었을 수 있습니다. 
+          홈페이지로 돌아가서 다시 시도해보세요.
         </ErrorDescription>
         <HomeButton onClick={() => router.push("/")}>
           홈으로 돌아가기

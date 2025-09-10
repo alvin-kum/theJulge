@@ -1,9 +1,9 @@
 // pages/index.tsx
 import { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/footer";
-import RecommendedPosts from "@/Sections/RecommendedPosts";
-import AllPosts from "@/Sections/AllPosts";
+import CustomHeader from "@/components/Header/Header";
+import Footer from "@/components/Footer";
+import RecommendedPosts from "@/components/Sections/RecommendedPosts";
+import AllPosts from "@/components/Sections/AllPosts";
 import { listNotices } from "@/lib/api/notice";
 import { transformNoticeToPostData, NoticeItem } from "@/utils/transformers";
 import type { PostData } from "@/types/shop";
@@ -55,7 +55,6 @@ export default function HomePage() {
 
   return (
     <>
-      <Header />
       <main>
         <RecommendedPosts posts={posts.slice(0, 3)} />
         <AllPosts posts={posts} />

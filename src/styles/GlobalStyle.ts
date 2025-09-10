@@ -1,20 +1,43 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
- * {
+  /* Reset */
+  *, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
+  /* Root */
+  :root {
+    color-scheme: light dark;
+  }
+
+  /* Base */
+  html, body, #__next {
+    height: 100%;
+  }
+
   html, body {
-    font-family: 'SpoqaHanSansNeo', sans-serif;
+    font-family: 'SpoqaHanSansNeo', Pretendard, -apple-system, system-ui, sans-serif;
     font-size: 16px;
-    color: #333;
+    color: #111;
     background-color: #fff;
     line-height: 1.5;
   }
 
+  /* Modal open 상태 */
+  body.modal-open {
+    overflow: hidden;
+    -ms-overflow-style: none;  /* IE, Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  body.modal-open::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
+
+  /* Elements */
   a {
     text-decoration: none;
     color: inherit;
@@ -31,12 +54,6 @@ const GlobalStyle = createGlobalStyle`
     max-width: 100%;
     height: auto;
   }
-:root { color-scheme: light; }
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body, #__next { height: 100%; }
-  body { margin: 0; font-family: -apple-system,Pretendard,system-ui,sans-serif; color:#111; }
-  button { cursor: pointer; }
-
 `;
 
 export default GlobalStyle;

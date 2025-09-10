@@ -57,8 +57,8 @@ export const NavButton = styled.button`
   }
 
   &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+    cursor: auto;
+    opacity: 0.2;
   }
   
   @media (min-width: 768px) {

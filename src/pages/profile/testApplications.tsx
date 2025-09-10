@@ -1,6 +1,6 @@
 // src/pages/profile/test-applications.tsx
 import { useRouter } from "next/router";
-import CustomHeader from "@/components/gnb/CustomHeader";
+import CustomHeader from "@/components/Header/Header";
 import {
   Wrapper,
   Container,
@@ -28,7 +28,7 @@ import {
   StatusBadge,
   Pagination,
   PageNumber,
-} from "@/styles/profile.styles";
+} from "@/pages/profile/profile.styles";
 
 export default function TestApplicationsPage() {
   const router = useRouter();

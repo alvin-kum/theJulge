@@ -3,9 +3,9 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
-import Input from "@/components/Input";
-import CustomButton from "@/components/button/CustomButton";
-import { login } from "../lib/api/auth";
+import Input from "@/components/Input/Input";
+import CustomButton from "@/components/Button/CustomButton";
+import { login } from "../../lib/api/auth";
 import {
   Wrapper,
   FormContainer,
@@ -14,8 +14,8 @@ import {
   SignupText,
   SignupLink,
   ErrorText,
-} from "../styles/login.styles";
-import Modal from "../components/Modal"; // 공통 모달 import
+} from "./login.styles";
+import Modal from "../../components/Modal"; // 공통 모달 import
 
 export default function LoginPage() {
   const router = useRouter();
