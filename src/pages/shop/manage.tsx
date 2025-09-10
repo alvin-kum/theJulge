@@ -207,6 +207,52 @@ const LoadingSubText = styled.div`
   font-size: 14px;
   color: #6b7280;
 `;
+// 카드형 헤더 추가
+const ShopCard = styled.div`
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff7ed;
+  align-items: center;
+  margin-bottom: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+const ShopCover = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+`;
+const ShopMeta = styled.div`
+  display: grid;
+  gap: 10px;
+`;
+const ShopCategory = styled.span`
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  font-weight: 700;
+  width: fit-content;
+`;
+const ShopDesc = styled.p`
+  font-size: 14px;
+  color: #374151;
+  margin: 4px 0 0;
+  line-height: 1.5;
+`;
+
 
 interface Notice {
   id: string;
@@ -247,27 +293,22 @@ export default function ShopManage() {
         if (urlShopId) {
           console.log("URL에서 shop ID 가져옴:", urlShopId);
           setShopId(urlShopId);
+          localStorage.setItem("myShopId", urlShopId);
         } else {
           console.log("/shops/my API 호출 시작");
-          const { data: response, error: apiError } = await apiClient.safeGet(
-            "/shops/my",
-            1
-          );
+          // URL에 id가 없을 때: localStorage에서 복구 시도 → 없으면 /shop으로
+          const savedId =
+          typeof window !== "undefined"
+            ? localStorage.getItem("myShopId") || undefined
+            : undefined;
 
-          if (apiError) {
-            console.error("내 가게 정보 확인 실패:", apiError);
-            alert(`가게 정보를 확인할 수 없습니다: ${apiError.message}`);
-            router.replace("/shop");
-            return;
-          }
-
-          if (response?.item && response.item.id) {
-            console.log("내 가게 ID 찾음:", response.item.id);
-            setShopId(response.item.id);
+          if (savedId) {
+          console.log("localStorage에서 shop ID 복구:", savedId);
+          setShopId(savedId);
           } else {
-            console.log("가게가 없어서 /shop으로 리다이렉트");
-            router.replace("/shop");
-            return;
+          console.log("URL/로컬 모두 shopId 없음 → /shop으로 이동");
+          router.replace("/shop");
+          return;
           }
         }
       } catch (error) {
@@ -418,20 +459,23 @@ export default function ShopManage() {
       <Container>
         <Content>
           <Header>
-            <ShopName>{shopData.name}</ShopName>
-            <ShopInfo>
-              📍 {shopData.address1} {shopData.address2} | 🏷️{" "}
-              {shopData.category} | 🕐 기본 시급{" "}
-              {formatHourlyPay(shopData.originalHourlyPay)}원
-            </ShopInfo>
-            <ActionButtons>
-              <ActionButton onClick={handleEditShop}>
-                가게 정보 편집
-              </ActionButton>
-              <PrimaryActionButton onClick={handleCreateNotice}>
-                공고 등록하기
-              </PrimaryActionButton>
-            </ActionButtons>
+          <ShopCard>
+            <ShopCover
+              src={shopData.imageUrl || "/placeholder-image.jpg"}
+              alt={shopData.name || "가게 이미지"}
+              onError={(e) => { (e.target as HTMLImageElement).style.backgroundColor = "#f3f4f6"; }}
+            />
+              <ShopMeta>
+                <ShopCategory>{shopData.category || "업종"}</ShopCategory>
+                <ShopName>{shopData.name}</ShopName>
+                <ShopInfo>📍 {shopData.address1} {shopData.address2}</ShopInfo>
+                {shopData.description ? <ShopDesc>{shopData.description}</ShopDesc> : null}
+                <ActionButtons>
+                  <ActionButton onClick={handleEditShop}>편집하기</ActionButton>
+                  <PrimaryActionButton onClick={handleCreateNotice}>공고 등록하기</PrimaryActionButton>
+                </ActionButtons>
+              </ShopMeta>
+            </ShopCard>
           </Header>
 
           <TabSection>
@@ -456,9 +500,9 @@ export default function ShopManage() {
                   <NoticeGrid>
                     {notices.map((notice) => (
                       <NoticeCard
-                        key={notice.id}
-                        onClick={() => handleNoticeClick(notice.id)}
-                      >
+                      key={`notice-${notice.id}`}
+                      onClick={() => handleNoticeClick(notice.id)}
+                      > 
                         <NoticeImage
                           src={notice.imageUrl || "/placeholder-image.jpg"}
                           alt={notice.title || "공고 이미지"}
