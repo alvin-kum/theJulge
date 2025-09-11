@@ -123,29 +123,67 @@ export const ContentBox = styled.div`
 
 export const Section = styled.div``;
 
+export const HourBox = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: center;
+`;
+
+export const AddressBox = styled.div`
+  display: flex;
+  gap: 6px;
+  align-items: center;
+`;
+
 export const Label = styled.p`
-  font-size: 14px;
-  color: var(--primary);
+  font-size: 16px;
+  color: #ea3c12;
   margin: 0 0 4px 0;
   font-weight: 700;
 `;
 
 export const Row = styled.div`
   display: flex;
-  gap: 12.8px;
+  gap: 12px;
   align-items: center;
 `;
 
 export const ValueBig = styled.p`
-  font-size: 44.8px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--black);
-  letter-spacing: 0.896px;
+  letter-spacing: 2%;
   margin: 0;
 `;
 
-export const Value = styled.p`
+export const Subnote = styled.p`
   font-size: 16px;
-  color: var(--black);
+  color: #7d7986;
   margin: 0;
+`;
+
+export const Note = styled.p`
+  font-size: 16px;
+  color: #111322;
+  margin: 0;
+`;
+
+export const NoticeDescWrap = styled.div`
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  padding: 32px;
+  background: #f2f2f3;
+  border-radius: 12px;
+`;
+
+export const NoticeDescHeader = styled.h3`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 0.2px;
+`;
+export const NoticeDescContent = styled.p`
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
 `;

@@ -118,7 +118,9 @@ export default function AllPosts({ posts }: AllPostsProps) {
               <Post
                 key={post.id}
                 {...post}
-                onClick={() => router.push(`/shop/${post.id}`)} // shop 상세페이지로 이동
+                onClick={() => {
+                  router.push(`/notice/${post.shopId}/notices/${post.id}`)
+                }}
               />
             ))}
           </PostGrid>

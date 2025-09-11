@@ -1,0 +1,11 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.description {
+  font-size: 2.4rem;
+  color: var(--gray-30);
+}

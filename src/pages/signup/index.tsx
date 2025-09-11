@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Input from "@/components/Input/Input";
+import Input from "@/components/FormInput";
 import CustomButton from "@/components/Button/CustomButton";
 import { register } from "../../lib/api/auth";
 import {
@@ -16,7 +16,7 @@ import {
   UserTypeButton,
   CheckCircle,
 } from "./signup.styles";
-import Modal from "../../components/Modal"; // 공통 모달 import
+import Modal from "../../components/Modal/Modal"; // 공통 모달 import
 
 export default function SignupPage() {
   const router = useRouter();
