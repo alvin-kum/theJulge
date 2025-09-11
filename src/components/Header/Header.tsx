@@ -70,8 +70,10 @@ const CustomHeader = ({
   // 검색어 입력후 검색이미지 클릭시 도메인에 쿼리스트링 전달.
   // 이 쿼리스트링값을 공고 페이지에서 받아서 목록을 조회해줄수 있음.
   const handleSubmit = () => {
+
     if (!search || search.trim() === "") return;
     router.push(`/search?keyword=${encodeURIComponent(search)}`); // 여기 슬레시와 물음표 사이에 경로를 공고페이지로 설정
+
   };
 
   // 검색어 입력후 엔터키 누르면 도메인에 쿼리스트링 전달.

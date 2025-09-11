@@ -63,7 +63,6 @@ export default function ProfilePage() {
 
   return (
     <Wrapper>
-
       <Container>
         <ProfileSection>
           <Title>내 프로필</Title>
@@ -178,19 +177,7 @@ export default function ProfilePage() {
         </ProfileSection>
       </Container>
 
-      <footer
-        style={{
-          marginTop: 40,
-          textAlign: "center",
-          color: "#999",
-          height: "100px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        ⓒcodeit - 2023 | Privacy Policy | FAQ
-      </footer>
+      
     </Wrapper>
   );
 }
