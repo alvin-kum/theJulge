@@ -23,7 +23,7 @@ import {
   NoticeDescHeader,
   NoticeDescWrap,
 } from "./noticeInfoCard.styles";
-import Button from "../button/CustomButton";
+import Button from "@/components/Button/CustomButton";
 import HourlyPayBadge from "@/components/HourlyPayBadge";
 import {
   getMyApplicationForNotice,

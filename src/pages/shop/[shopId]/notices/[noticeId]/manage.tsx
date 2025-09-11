@@ -9,7 +9,7 @@ import {
   getApplicationsByNotice,
   updateApplicationStatus,
   type Application,
-} from "@/lib/api/application"; // 위에서 정리했던 파일
+} from "@/lib/api/applications"; // 위에서 정리했던 파일
 
 export default function EmployerNoticeManagePage() {
   const router = useRouter();
