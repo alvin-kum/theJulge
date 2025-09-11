@@ -11,7 +11,7 @@ import {
   SubmitButton,
   Label,
   CloseButton,
-} from "./profileEdit.styles";
+} from "@/styles/profileEdit.styles";
 
 import Modal from "@/components/Modal/Modal";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";

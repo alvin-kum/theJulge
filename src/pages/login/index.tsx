@@ -13,7 +13,7 @@ import {
   SignupText,
   SignupLink,
   ErrorText,
-} from "./login.styles";
+} from "@/styles/login.styles";
 import Modal from "../../components/Modal/Modal"; // 공통 모달 import // 경로 정리
 import type { AxiosError } from "axios";
 
