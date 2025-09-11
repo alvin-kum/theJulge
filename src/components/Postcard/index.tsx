@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   PostCard,
@@ -15,17 +14,17 @@ import {
 } from "./styles";
 import HourlyPayBadge from "@/components/HourlyPayBadge";
 
-
 export interface PostProps {
-  id: number;
+  id: string;
   imageUrl: string;
   name: string;
 
-  startsAt: string;     // "2025-01-02T15:00:00"
-  workhour: number;     // 근무 시간(숫자)
+  startsAt: string; // "2025-01-02T15:00:00"
+  workhour: number; // 근무 시간(숫자)
   address1: string;
   hourlyPay: number;
   originalHourlyPay: number;
+  isClosed?: boolean;
   onClick?: () => void;
 }
 
@@ -114,12 +113,14 @@ const Post: React.FC<PostProps> = ({
           <HourlyPay $isClosed={isClosed}>
             {hourlyPay.toLocaleString()}원
           </HourlyPay>
-          <HourlyPayBadge percentage={hourlyPayPercentage} isClosed={isClosed} />
+          <HourlyPayBadge
+            percentage={hourlyPayPercentage}
+            isClosed={isClosed}
+          />
         </PostHourlyPayWrapper>
       </PostContent>
     </PostCard>
   );
-
 };
 
 export default Post;

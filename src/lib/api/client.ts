@@ -145,5 +145,22 @@ class ApiClient {
   }
 }
 
+export function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("accessToken");
+}
+
+export function isLoggedIn(): boolean {
+  return !!getToken();
+}
+
+/** 로그인 페이지로 보내되, 성공 후 돌아올 next를 같이 붙여 보냅니다. */
+export function goLoginWithReturn(nextPath?: string) {
+  if (typeof window === "undefined") return;
+  const next = nextPath ?? window.location.pathname + window.location.search;
+  // 로그인 페이지가 "/"라면 아래 유지, /login이라면 바꿔주세요.
+  window.location.href = `/login?next=${encodeURIComponent(next)}`;
+}
+
 export const apiClient = new ApiClient();
 export type { ApiError };

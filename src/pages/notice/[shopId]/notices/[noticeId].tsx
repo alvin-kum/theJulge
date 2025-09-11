@@ -1,10 +1,12 @@
 // src/pages/notice/[id].tsx
 import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-// import NoticeInfoCard from "@/components/notice/noticeInfoCard";
 import NoticeInfoCard from "../../../../components/notice/noticeInfoCard";
+import { getShopNotice, type Notice } from "@/lib/api/notice";
+import { AxiosError } from "axios";
+import { addNewNotice } from "@/utils/recentNotice";
+import NoticeRecent from "@/components/notice/noticeRecent/noticeRecent";
 
 const BREAKPOINTS = {
   mobile: 767, // ≤ 767
@@ -12,40 +14,11 @@ const BREAKPOINTS = {
   // desktop: ≥ 1200
 };
 
-// SSR 문제 분리용: 필요 없으면 { ssr: true } 또는 그냥 일반 import로 바꿔도 됩니다.
-// const NoticeInfoCard = dynamic(
-//   () => import("@/components/notice/noticeInfoCard"),
-//   { ssr: true }
-// );
-
 export default function NoticeDetailPage() {
-  // // ✨ 실제 데이터 대신 화면만 확인 가능한 목업 텍스트/이미지
-  // const mock = {
-  //   title: "도토리 식당 주말 알바 모집",
-  //   status: "모집중",
-  //   wage: "15,000원",
-  //   badge: "시급",
-  //   image:
-  //     "https://images.unsplash.com/photo-1533777857889-4bea1a7fcb0d?q=80&w=1600&auto=format&fit=crop",
-  //   summary: [
-  //     { label: "근무지역", value: "서울시 마포구" },
-  //     { label: "근무요일", value: "토, 일" },
-  //     { label: "근무시간", value: "11:00 ~ 20:00 (휴게 1h)" },
-  //     { label: "모집인원", value: "2명" },
-  //   ],
-  //   description:
-  //     "홀/서빙 보조, 기본 정리정돈. 성실하고 밝은 분을 찾습니다. 유니폼 지급, 식사 제공.",
-  //   notice:
-  //     "초보 가능 / 장기 근무 가능자 우대. 지원 시 간단한 자기소개를 함께 남겨주세요.",
-  // };
-
   const { query } = useRouter();
   const shopId = typeof query.shopId === "string" ? query.shopId : "";
   const noticeId = typeof query.noticeId === "string" ? query.noticeId : "";
 
-  if (!shopId || !noticeId)
-    return <div style={{ padding: 24 }}>잘못된 경로</div>;
-  console.log("[page]", { shopId, noticeId });
   const applicants = [
     {
       name: "김지원",
@@ -76,15 +49,97 @@ export default function NoticeDetailPage() {
       status: "대기",
     },
   ];
+
+  // const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+  const [notice, setNotice] = useState<Notice | undefined>();
+
+  // 클라이언트 마운트 여부 (날짜 포맷 SSR 불일치 방지)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!shopId || !noticeId) return;
+    (async () => {
+      try {
+        // setLoading(true);
+        const item = await getShopNotice(shopId, noticeId);
+        setNotice(item);
+        // 콘솔 출력
+        console.log("[NoticeInfoCard] notice:", item);
+
+        if (item?.shop?.item)
+          console.log("[NoticeInfoCard] shop:", item.shop.item);
+      } catch (e: unknown) {
+        const err = e as AxiosError<{ message?: string }>;
+        const msg =
+          err?.response?.data?.message ||
+          err?.message ||
+          "공고 정보를 불러오지 못했습니다.";
+        setErr(String(msg));
+        console.error("[NoticeInfoCard] error:", e);
+      } finally {
+        // setLoading(false);
+      }
+    })();
+  }, [shopId, noticeId]);
+
+  // 표시용 파생값
+  const shopItem = notice?.shop?.item;
+  const category = shopItem?.category ?? "분류";
+  const shopName = shopItem?.name ?? "가게명";
+  const imageUrl =
+    shopItem?.imageUrl || "https://placehold.co/800x600?text=No+Image";
+  const hourlyPay = notice?.hourlyPay ?? 0;
+  const isClosed = notice?.closed ?? false;
+  const shopDesc = shopItem?.description ?? "";
+  const noticeDesc = notice?.description ?? "";
+  const address = [shopItem?.address1, shopItem?.address2]
+    .filter(Boolean)
+    .join(" ");
+  const startsAtText = notice?.startsAt ?? "";
+  const workHourText = notice?.workhour ?? 0;
+
+  // const wagePercentage = notice?.wagePercentage ?? 0;
+
+  if (err) return <p>{err}</p>;
+  if (!notice) return <p>불러오는 중...</p>;
+
+  if (!notice) {
+    return null;
+  }
+
+  addNewNotice(notice);
+
+  if (!shopId || !noticeId)
+    return <div style={{ padding: 24 }}>잘못된 경로</div>;
+
   return (
-    <Wrap>
-      <NoticeInfoCard shopId={shopId} noticeId={noticeId} />
-
+    <>
+      <Wrap>
+        <NoticeInfoCard
+          shopId={shopId as string}
+          noticeId={noticeId as string}
+          category={category}
+          shopName={shopName}
+          imageUrl={imageUrl}
+          hourlyPay={hourlyPay}
+          isClosed={isClosed}
+          shopDesc={shopDesc}
+          noticeDesc={noticeDesc}
+          address={address}
+          startsAtText={startsAtText}
+          workHourText={workHourText}
+        />
+      </Wrap>
       <Section>
-        <SectionTitle>신청자 목록</SectionTitle>
+        <NoticeRecent />
+      </Section>
 
-        {/* 데스크탑/태블릿: 테이블, 모바일: 카드 리스트 */}
-        <ApplicantsCard>
+      {/* <SectionTitle>신청자 목록</SectionTitle> */}
+
+      {/* 데스크탑/태블릿: 테이블, 모바일: 카드 리스트 */}
+      {/* <ApplicantsCard>
           <ApplicantsTable>
             <thead>
               <tr>
@@ -155,10 +210,25 @@ export default function NoticeDetailPage() {
               ›
             </button>
           </Pagination>
-        </ApplicantsCard>
-      </Section>
-    </Wrap>
+        </ApplicantsCard> */}
+    </>
   );
+}
+
+/* ================= 유틸 ================= */
+function formatKST(iso: string) {
+  try {
+    const d = new Date(iso);
+    // 한국시간으로 YYYY.MM.DD HH:mm 형식
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mi = String(d.getMinutes()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
+  } catch {
+    return "";
+  }
 }
 
 /* ======================= styled ======================= */
@@ -174,7 +244,7 @@ const Wrap = styled.div`
   align-items: center;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 20px 16px 64px;
+  /* padding: 20px 16px 64px; */
   color: var(--text);
 `;
 
@@ -192,11 +262,12 @@ const Chip = styled.span<{ tone?: "primary" | "muted" }>`
 `;
 
 const Section = styled.section`
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  margin: 0 auto;
+  max-width: 1100px;
+  /* padding: 20px 72px 64px; */
 `;
 
 const SectionTitle = styled.h2`
