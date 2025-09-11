@@ -44,24 +44,66 @@ export const FormFields = styled.div`
   }
 `;
 
+// InputWrapper: FieldLabel + Input/Textarea + Unit 포함
+export const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  gap: 8px;
+`;
+
+// FieldLabel: 입력 필드 상단에 고정
+export const FieldLabel = styled.label`
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #111322;
+`;
+
+// Input과 Unit 같이 감싸기
+export const InputInnerWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 58px;
+  display: flex;
+  align-items: center;
+`;
+
+// Unit 표시용
+export const UnitLabel = styled.span`
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 14px;
+  pointer-events: none;
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #111322;
+`;
+
 // 버튼 부모 컨테이너
 export const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: center;  /* 가로 중앙 */
-  align-items: center;      /* 세로 중앙 */
+  justify-content: center;
+  align-items: center;
 `;
 
 // 제출 버튼
 export const SubmitButton = styled.button`
   width: 100%;
-  max-width: 351px; /* 최대 크기 */
+  max-width: 351px;
   height: 48px;
   padding: 14px 0;
   background-color: #EA3C12;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  
+
   color: #FFFFFF;
   font-size: 16px;
   font-weight: 700;
@@ -70,7 +112,7 @@ export const SubmitButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  white-space: nowrap; /* 줄바꿈 방지 */
+  white-space: nowrap;
 
   @media (min-width: 768px) {
     max-width: 312px;

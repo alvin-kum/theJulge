@@ -1,61 +1,37 @@
 import React, { useRef } from "react";
-import {
-  Wrapper,
-  Label,
-  InputWrapper,
-  StyledInput,
-  StyledTextarea,
-  Unit,
-} from "./styles";
+import { Wrapper, InputWrapper, StyledInput, StyledTextarea } from "./styles";
 
-type InputProps =
-  | (React.InputHTMLAttributes<HTMLInputElement> & {
-      isError?: boolean;
-      label?: string;
-      unit?: string;
-      type?: "text" | "number" | "datetime-local";
-      onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    })
-  | (React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-      isError?: boolean;
-      label?: string;
-      unit?: string;
-      type: "textarea";
-      onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-    });
+// input 전용 props
+interface InputElementProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  type?: "text" | "number" | "datetime-local";
+}
 
-const Input = ({
-  isError = false,
-  label,
-  unit,
-  type = "text",
-  ...props
-}: InputProps) => {
+// textarea 전용 props
+interface TextareaElementProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "type"> {
+  type: "textarea";
+}
+
+type InputProps = InputElementProps | TextareaElementProps;
+
+const Input: React.FC<InputProps> = (props) => {
+  const { type = "text", ...rest } = props;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const handleTextareaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-  };
+  const isTextarea = type === "textarea";
 
   return (
     <Wrapper>
-      {label && <Label>{label}</Label>}
       <InputWrapper>
-        {type === "textarea" ? (
+        {isTextarea ? (
           <StyledTextarea
             ref={textareaRef}
-            $isError={isError}
-            $hasUnit={!!unit}
-            onInput={handleTextareaInput}
-            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)} // textarea 전용 속성 보장
+            {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : (
           <StyledInput
-            $isError={isError}
-            $hasUnit={!!unit}
-            {...(props as React.InputHTMLAttributes<HTMLInputElement>)} // input 전용 속성 보장
+            type={type}
+            {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}
           />
         )}
-        {unit && <Unit>{unit}</Unit>}
       </InputWrapper>
     </Wrapper>
   );

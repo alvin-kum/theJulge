@@ -41,7 +41,8 @@ export type NoticeItem = {
 // NoticeItem을 PostData로 변환
 export const transformNoticeToPostData = (notice: NoticeItem): PostData => {
   return {
-    id: safeParseId(notice.id),
+    id: notice.id,
+    shopId:notice.shop.item.id,
     name: notice.name ?? notice.shop.item.name,
     imageUrl: notice.imageUrl ?? notice.shop.item.imageUrl,
     address1: notice.address1 ?? notice.shop.item.address1,

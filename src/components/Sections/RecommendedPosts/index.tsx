@@ -20,7 +20,7 @@ export default function RecommendedPosts({ posts }: RecommendedPostsProps) {
             <Post
               key={post.id}
               {...post}
-              onClick={() => router.push(`/shop/${post.id}`)} // 클릭 시 상세페이지 이동
+              onClick={() => router.push(`/notice/${post.shopId}/notices/${post.id}`)} // 클릭 시 상세페이지 이동
             />
           ))}
         </PostGrid>

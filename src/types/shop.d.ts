@@ -35,7 +35,7 @@ export interface Notice {
 
 // PostData 타입을 여기에 정의
 export interface PostData extends Omit<Notice, 'id'> {
-  id: number; // Post 컴포넌트에서 필요한 number 타입 id
+  id: string; // Post 컴포넌트에서 필요한 number 타입 id
   shopId: string; // shop ID 추가
 }
 
