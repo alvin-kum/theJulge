@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { typography } from "@/styles/typography";
 // import { apiClient } from "@/lib/api/client"; // 서버 붙일 때 주석 해제
 
 interface ApplicationListProps {
@@ -34,16 +35,21 @@ const Wrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  min-width: 600px;
+  width: 100%;
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  ${typography.body1Regular}
 
   thead {
     background-color: #fff4f2;
+  }
+
+  td {
+  ${typography.body2Regular}
   }
 
   th,
@@ -54,11 +60,17 @@ const Table = styled.table`
     white-space: nowrap;
   }
 
-  th:first-child,
+  th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 120px;
+  }
+
   td:first-child {
     position: sticky;
     left: 0;
-    background-color: #fff;
+    background-color: #fff; 
     z-index: 1;
     min-width: 120px;
   }
@@ -85,8 +97,7 @@ const Table = styled.table`
 const StatusBadge = styled.span<{ status: string }>`
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: bold;
+  ${typography.body2Bold}
   display: inline-block;
   text-align: center;
 

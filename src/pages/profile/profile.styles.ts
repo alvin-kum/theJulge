@@ -51,6 +51,7 @@ export const ProfileCard = styled.div<{ hasProfile?: boolean }>`
   text-align: ${({ hasProfile }) => (hasProfile ? "left" : "center")};
   gap: 24px;
   margin-bottom: 40px;
+  position: relative;
 
   @media (max-width: 744px) {
     flex-direction: column;
@@ -120,7 +121,7 @@ export const ProfileDescription = styled.div`
 `;
 
 export const EditButton = styled.button<{ isNew?: boolean }>`
-  height: 42px;
+  height: 48px;
   padding: 10px 20px;
   ${typography.body1Regular};
   border-radius: 6px;
@@ -137,8 +138,8 @@ export const EditButton = styled.button<{ isNew?: boolean }>`
     !isNew &&
     `
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 32px;
+    right: 32px;
   `}
 
   @media (max-width: 375px) {

@@ -23,8 +23,8 @@ import {
   ApplicationsTitle,
 } from "./profile.styles";
 import { fetchMyInfo } from "../../lib/api/user";
-// ✅ 신청 내역은 이 컴포넌트가 전담
-import ApplicationList from "@/components/Application"; // 경로 맞춰 수정
+
+import ApplicationList from "@/components/Application"; 
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -33,9 +33,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
-    if (!userId) return;
+    if (!userId) {
+      alert("로그인이 필요한 서비스입니다.");
+      router.replace("/login");
+      return;
+    }
 
-    // ✅ 신청내역은 더 이상 여기서 안 불러옴
     fetchMyInfo(userId)
       .then((u) => setUser(u))
       .finally(() => setLoading(false));
@@ -102,10 +105,12 @@ export default function ProfilePage() {
                     </ProfileDescription>
                   </ProfileTextArea>
 
-                  <EditButton onClick={() => router.push("/profile/edit")}>
-                    편집하기
-                  </EditButton>
+                  
                 </ProfileContent>
+
+                <EditButton onClick={() => router.push("/profile/edit")}>
+                    편집하기
+                </EditButton>
               </ProfileCard>
 
               {/* ✅ 신청 내역: 항상 ApplicationList만 렌더 (빈/로딩/데이터는 내부에서 처리) */}

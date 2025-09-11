@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
 import Input from "@/components/Input/Input";
-import CustomButton from "@/components/button/CustomButton";
+import CustomButton from "@/components/Button/CustomButton";
 import { login } from "@/lib/api/auth"; // 경로 정리
 import {
   Wrapper,
