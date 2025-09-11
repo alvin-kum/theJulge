@@ -21,7 +21,7 @@ import {
   EditButton,
   ApplicationsSection,
   ApplicationsTitle,
-} from "../../styles/profile.styles";
+} from "@/styles/profile.styles";
 import { fetchMyInfo } from "../../lib/api/user";
 
 import ApplicationList from "@/components/Application"; 
