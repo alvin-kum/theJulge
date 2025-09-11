@@ -1,4 +1,45 @@
+import { useEffect } from "react";
 import style from "./NotificationCard.module.css";
+
+type Alert = {
+  item: {
+    id: string;
+    createdAt: string;
+    result: "accepted" | "rejected";
+    read: boolean;
+    application: {
+      item: {
+        id: string;
+        status: "pending" | "accepted" | "rejected";
+      };
+      href: string;
+    };
+    shop: {
+      item: {
+        id: string;
+        name: string;
+        category: string;
+        address1: string;
+        address2: string;
+        description: string;
+        imageUrl: string;
+        originalHourlyPay: number;
+      };
+      href: string;
+    };
+    notice: {
+      item: {
+        id: string;
+        hourlyPay: number;
+        description: string;
+        startsAt: string;
+        workhour: number;
+        closed: boolean;
+      };
+      href: string;
+    };
+  };
+};
 
 /**
  * 여기서 최종적으로 값을 넣어주면 됩니다!
@@ -18,7 +59,10 @@ function dateCalc(value: string) {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  return `${year}-${month}-${day}`;
+  const months = String(month).padStart(2, "0");
+  const days = String(day).padStart(2, "0");
+
+  return `${year}-${months}-${days}`;
 }
 
 // 시간 계산하는 함수입니다.
@@ -45,37 +89,58 @@ function getMinutesAgo(createAt: string) {
   const now = new Date();
   const timeDiff = now.getTime() - createDate.getTime();
   const result = Math.floor(timeDiff / 60000);
+
   return result;
 }
 
-/**
- * NotificationCard안에 받아온 props를 뿌려주기만 하면 됩니다.
- *
- * 1. 두번째 div안에 true ? style.dot_approve ... 되어있는 부분중 true를 승인인지 거절인지 true / false로 데이터를 넣어주면됩니다.
- * 2. HS 과일주스 라고 되어있는 부분을 지원한 가게의 이름이 저장된 데이터의 변수값을 넣어주면 됩니다.
- * 3. span태그 안에 알바 시간관련 데이터를 넣어주시면 됩니다. 위의 함수를 참고해주시면 됩니다.
- * 4. 그다음줄에 있는 span className={true ? style.approve ... } 로 되어있는 부분중 true를 1번과 똑같은 데이터 설정을 해주시면 됩니다.
- * 5. 4번과 같은 줄에 있는 승인이라고 적혀있는 문자를 1번 4번과 같은 작업을 해주면 됩니다.
- * 6. 마지막 div에 {1}분전이라고 적혀있는 문자중에 {1}이 부분의 숫자를 데이터로 변경해주세요. 위의 getMinutesAgo함수를 참고해주세요.
- * 7. 이상입니다!
- */
-
-const NotificationCard = () => {
+const NotificationCard = ({
+  alert,
+}: {
+  alert: any; // !!!!! any 대신에 올바른 타입을 넣어주는게 좋습니다.
+}) => {
+  const agoTime =
+    getMinutesAgo(alert.item.createdAt) / 60 >= 1
+      ? Math.floor(getMinutesAgo(alert.item.createdAt) / 60)
+      : getMinutesAgo(alert.item.createdAt);
   return (
     <div className={style.container}>
       <div
         className={`${style.dot} ${
-          true ? style.dot_approve : style.dot_reject
+          alert.item.result === "accepted"
+            ? style.dot_approve
+            : style.dot_reject
         }`}
       ></div>
       <div className={style.text_container}>
-        <span>HS 과일주스({"2023-01-14"} &nbsp;</span>
-        <span>{"15:00~18:00"})</span>
+        <span>
+          {alert.item.shop.item.name}(
+          {dateCalc(alert.item.notice.item.startsAt)} &nbsp;
+        </span>
+        <span>
+          {timeCalc(alert.item.notice.item.startsAt)}~
+          {timeCalc(
+            alert.item.notice.item.startsAt,
+            alert.item.notice.item.workhour
+          )}
+          )
+        </span>
         <span> 공고 지원이</span>
-        <span className={true ? style.approve : style.reject}> 승인</span>
+        <span
+          className={
+            alert.item.result === "accepted" ? style.approve : style.reject
+          }
+        >
+          {" "}
+          {alert.item.result === "accepted" ? "승인" : "거절"}
+        </span>
         <span>되었어요.</span>
       </div>
-      <div className={style.time}>{1}분 전</div>
+      <div className={style.time}>
+        {agoTime}
+        {Math.floor(getMinutesAgo(alert.item.createdAt) / 60) >= 1
+          ? "시간 전"
+          : "분 전"}
+      </div>
     </div>
   );
 };

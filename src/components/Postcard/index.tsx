@@ -18,6 +18,7 @@ export interface PostProps {
   id: string;
   imageUrl: string;
   name: string;
+
   startsAt: string; // "2025-01-02T15:00:00"
   workhour: number; // 근무 시간(숫자)
   address1: string;

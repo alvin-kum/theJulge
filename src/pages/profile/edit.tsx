@@ -10,9 +10,11 @@ import {
   ButtonWrapper,
   SubmitButton,
   Label,
+  CloseButton, 
 } from "./profileEdit.styles";
 
-import Modal from "../../components/Modal";
+
+import Modal from "@/components/Modal";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";
 
 export default function ProfileEditPage() {
@@ -74,8 +76,9 @@ export default function ProfileEditPage() {
 
   return (
     <PageWrapper>
-
       <ProfileContainer>
+        <CloseButton onClick={() => router.push("/profile")}>×</CloseButton>
+
         <Title>내 프로필</Title>
 
         <FormRow>
@@ -84,7 +87,7 @@ export default function ProfileEditPage() {
             <InputField
               placeholder="입력"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
             />
           </div>
 
@@ -93,56 +96,55 @@ export default function ProfileEditPage() {
             <InputField
               placeholder="입력"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
             />
           </div>
 
           <div>
-            <Label>선호 지역</Label>
-            <InputField
-              as="select"
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-            >
-              <option value="">선택</option>
-              <option>서울시 강남구</option>
-              <option>서울시 강동구</option>
-              <option>서울시 강북구</option>
-              <option>서울시 강서구</option>
-              <option>서울시 관악구</option>
-              <option>서울시 광진구</option>
-              <option>서울시 구로구</option>
-              <option>서울시 금천구</option>
-              <option>서울시 노원구</option>
-              <option>서울시 도봉구</option>
-              <option>서울시 동대문구</option>
-              <option>서울시 동작구</option>
-              <option>서울시 마포구</option>
-              <option>서울시 서대문구</option>
-              <option>서울시 서초구</option>
-              <option>서울시 성동구</option>
-              <option>서울시 성북구</option>
-              <option>서울시 송파구</option>
-              <option>서울시 양천구</option>
-              <option>서울시 영등포구</option>
-              <option>서울시 용산구</option>
-              <option>서울시 은평구</option>
-              <option>서울시 종로구</option>
-              <option>서울시 중구</option>
-              <option>서울시 중랑구</option>
-            </InputField>
+              <Label>선호 지역</Label>
+              <InputField
+                as="select"
+                value={region}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRegion(e.target.value)}
+              >
+                <option value="">선택</option>
+                <option>서울시 강남구</option>
+                <option>서울시 강동구</option>
+                <option>서울시 강북구</option>
+                <option>서울시 강서구</option>
+                <option>서울시 관악구</option>
+                <option>서울시 광진구</option>
+                <option>서울시 구로구</option>
+                <option>서울시 금천구</option>
+                <option>서울시 노원구</option>
+                <option>서울시 도봉구</option>
+                <option>서울시 동대문구</option>
+                <option>서울시 동작구</option>
+                <option>서울시 마포구</option>
+                <option>서울시 서대문구</option>
+                <option>서울시 서초구</option>
+                <option>서울시 성동구</option>
+                <option>서울시 성북구</option>
+                <option>서울시 송파구</option>
+                <option>서울시 양천구</option>
+                <option>서울시 영등포구</option>
+                <option>서울시 용산구</option>
+                <option>서울시 은평구</option>
+                <option>서울시 종로구</option>
+                <option>서울시 중구</option>
+                <option>서울시 중랑구</option>
+              </InputField>
+            </div>
+          </FormRow>
+
+          <div>
+            <Label>소개</Label>
+            <TextArea
+              placeholder="입력"
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+            />
           </div>
-        </FormRow>
-
-        <div>
-          <Label>소개</Label>
-          <TextArea
-            placeholder="입력"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
         <ButtonWrapper>
           <SubmitButton onClick={handleSubmit}>등록하기</SubmitButton>
         </ButtonWrapper>
