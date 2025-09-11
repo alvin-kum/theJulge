@@ -1,5 +1,7 @@
+
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer";
+
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
