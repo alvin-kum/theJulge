@@ -76,16 +76,17 @@ const TabList = styled.div`
   margin-bottom: 24px;
 `;
 
-const Tab = styled.button<{ active: boolean }>`
+// 변경 후
+const Tab = styled.button<{ $active: boolean }>`
   padding: 12px 24px;
   background: none;
   border: none;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  color: ${(props) => (props.active ? "#ea580c" : "#6b7280")};
+  color: ${(props) => (props.$active ? "#ea580c" : "#6b7280")};
   border-bottom: 2px solid
-    ${(props) => (props.active ? "#ea580c" : "transparent")};
+    ${(props) => (props.$active ? "#ea580c" : "transparent")};
   transition: all 0.2s;
 
   &:hover {
@@ -347,17 +348,32 @@ export default function ShopManage() {
             `/shops/${shopId}/notices`
           );
           console.log("공고 목록 응답:", noticeResponse);
-          setNotices(noticeResponse.items || []);
+
+          // ✅ 언래핑 + 필드 보정
+          const unwrapped: any[] = (noticeResponse.items || []).map((x: any) => x?.item ?? x);
+          const normalized = unwrapped.map((n: any) => ({
+            ...n,
+            imageUrl: n.imageUrl ?? n.shop?.imageUrl ?? n.shop?.item?.imageUrl ?? "",
+          }));
+
+          setNotices(normalized);
         } catch (noticeError) {
           console.error("가게 공고 목록 가져오기 실패:", noticeError);
           try {
             console.log("전체 공고 목록으로 대체 시도");
             const allNoticesResponse = await apiClient.get("/notices");
-            const filteredNotices = (allNoticesResponse.items || []).filter(
-              (notice: any) => notice.shop?.id === shopId
-            );
-            console.log("필터링된 공고 목록:", filteredNotices);
-            setNotices(filteredNotices);
+
+            // ✅ 언래핑 + 필터 보강 + 필드 보정
+            const allUnwrapped = (allNoticesResponse.items || []).map((x: any) => x?.item ?? x);
+            const filtered = allUnwrapped
+              .filter((n: any) => (n.shop?.id ?? n.shop?.item?.id) === shopId)
+              .map((n: any) => ({
+                ...n,
+                imageUrl: n.imageUrl ?? n.shop?.imageUrl ?? n.shop?.item?.imageUrl ?? "",
+              }));
+
+            console.log("필터링된 공고 목록:", filtered);
+            setNotices(filtered);
           } catch (allNoticesError) {
             console.error("전체 공고 목록 가져오기도 실패:", allNoticesError);
             setNotices([]);
@@ -457,19 +473,25 @@ export default function ShopManage() {
         <title>{shopData.name} 관리 - THE JULGE</title>
         <meta name="description" content="가게 정보 및 공고를 관리하세요" />
       </Head>
+
       <Container>
         <Content>
           <Header>
-          <ShopCard>
-            <ShopCover
-              src={shopData.imageUrl || "/placeholder-image.jpg"}
-              alt={shopData.name || "가게 이미지"}
-              onError={(e) => { (e.target as HTMLImageElement).style.backgroundColor = "#f3f4f6"; }}
-            />
+            <ShopCard>
+              {/* ✅ 경로 통일 */}
+              <ShopCover
+                src={shopData.imageUrl || "/images/placeholder-image.jpg"}
+                alt={shopData.name || "가게 이미지"}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.backgroundColor = "#f3f4f6";
+                }}
+              />
               <ShopMeta>
                 <ShopCategory>{shopData.category || "업종"}</ShopCategory>
                 <ShopName>{shopData.name}</ShopName>
-                <ShopInfo>📍 {shopData.address1} {shopData.address2}</ShopInfo>
+                <ShopInfo>
+                  📍 {shopData.address1} {shopData.address2}
+                </ShopInfo>
                 {shopData.description ? <ShopDesc>{shopData.description}</ShopDesc> : null}
                 <ActionButtons>
                   <ActionButton onClick={handleEditShop}>편집하기</ActionButton>
@@ -482,7 +504,7 @@ export default function ShopManage() {
           <TabSection>
             <TabList>
               <Tab
-                active={activeTab === "등록한 공고"}
+                $active={activeTab === "등록한 공고"}
                 onClick={() => setActiveTab("등록한 공고")}
               >
                 등록한 공고
@@ -495,14 +517,21 @@ export default function ShopManage() {
                   <NoticeGrid>
                     {notices.map((notice) => (
                       <NoticeCard
-                      key={`notice-${notice.id}`}
-                      onClick={() => handleNoticeClick(notice.id)}
-                      > 
+                        key={`notice-${notice.id}`}
+                        onClick={() => handleNoticeClick(notice.id)}
+                      >
+                        {/* ✅ 이미지 경로 안전망 */}
                         <NoticeImage
-                          src={notice.imageUrl || "/placeholder-image.jpg"}
+                          src={
+                            notice.imageUrl ||
+                            notice.shop?.imageUrl ||
+                            notice.shop?.item?.imageUrl ||
+                            "/images/placeholder-image.jpg"
+                          }
                           alt={notice.title || "공고 이미지"}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
+                            target.src = "/images/placeholder-image.jpg";
                             target.style.backgroundColor = "#f3f4f6";
                             target.style.display = "flex";
                             target.style.alignItems = "center";
@@ -513,22 +542,17 @@ export default function ShopManage() {
                           }}
                         />
                         <NoticeContent>
-                          <NoticeTitle>
-                            {notice.title || "제목 없음"}
-                          </NoticeTitle>
+                          <NoticeTitle>{notice.title || "제목 없음"}</NoticeTitle>
                           <NoticeDetails>
                             <NoticeDetail>
-                              {formatDate(notice.startsAt)} (
-                              {notice.workhour || 0}시간)
+                              {formatDate(notice.startsAt)} ({notice.workhour || 0}시간)
                             </NoticeDetail>
                             <NoticeDetail>
                               {notice.description || "설명 없음"}
                             </NoticeDetail>
                           </NoticeDetails>
                           <NoticeFooter>
-                            <HourlyPay>
-                              {formatHourlyPay(notice.hourlyPay)}원
-                            </HourlyPay>
+                            <HourlyPay>{formatHourlyPay(notice.hourlyPay)}원</HourlyPay>
                             <PayIncrease>
                               {calculateRaisePercent(
                                 notice.hourlyPay,
@@ -554,7 +578,6 @@ export default function ShopManage() {
                 )}
               </div>
             )}
-
           </TabSection>
         </Content>
       </Container>
