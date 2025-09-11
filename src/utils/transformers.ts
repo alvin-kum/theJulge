@@ -42,11 +42,7 @@ export type NoticeItem = {
 export const transformNoticeToPostData = (notice: NoticeItem): PostData => {
   return {
     id: notice.id,
-<<<<<<< HEAD
-    shopId:notice.shop.item.id,
-=======
     shopId: notice.shop.item.id,
->>>>>>> 7aedd14ff6b3c64f2262bd8877c014548467abb4
     name: notice.name ?? notice.shop.item.name,
     imageUrl: notice.imageUrl ?? notice.shop.item.imageUrl,
     address1: notice.address1 ?? notice.shop.item.address1,
