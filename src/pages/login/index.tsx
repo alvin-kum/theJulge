@@ -14,7 +14,7 @@ import {
   SignupLink,
   ErrorText,
 } from "./login.styles";
-import Modal from "@/components/Modal"; // 경로 정리
+import Modal from "../../components/Modal/Modal"; // 공통 모달 import // 경로 정리
 import type { AxiosError } from "axios";
 
 export default function LoginPage() {
