@@ -4,24 +4,173 @@ import NotificationModal from "../NotificationModal/NotificationModal";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { authAxios } from "@/lib/axios";
 
-/**
- * NotificationModal폴더의 경우 ui 작업은 다 끝이났고 api 호출해서 데이터만 넣어주면됩니다.
- * src/axios.ts와 src/lib/api/alert.ts 안에 전부 정리가 되어 있어서 따로 설정하지 않아도 
- * 그냥 있는거를 가져와서 쓰면 될 것 같습니다.
- * 여러분들이 작업해놓은 src/axios.ts, src/lib/api/alert.ts 경로안에 있는 api를
- * 여기 커스텀 헤더 부분 안쪽에 호출해줘서 값을 추출한 뒤
- * props로 <NotificationModal />여기에 전달해서 사용하면 될 것 같습니다!
- *
- * 과정은 아래에 주석으로 남겨놓도록 하겠습니다!
- *
- * 주석은
- * 1. CustomHeader.tsx
- * 2. NotificationModal.tsx
- * 3. NotificationList.tsx
- * 4. NotificationCard.tsx
- * 순서로 읽어 보시면 api를 가져와서 설정하기에 편하실거라고 생각합니다.
- */
+type Alerts = {
+  count: number;
+  items: {
+    item: {
+      id: string;
+      createdAt: string;
+      result: "accepted" | "rejected";
+      read: boolean;
+      application: {
+        item: {
+          id: string;
+          status: "pending" | "accepted" | "rejected";
+        };
+        href: string;
+      };
+      shop: {
+        item: {
+          id: string;
+          name: string;
+          category: string;
+          address1: string;
+          address2: string;
+          description: string;
+          imageUrl: string;
+          originalHourlyPay: number;
+        };
+        href: string;
+      };
+      notice: {
+        item: {
+          id: string;
+          hourlyPay: number;
+          description: string;
+          startsAt: string;
+          workhour: number;
+          closed: boolean;
+        };
+        href: string;
+      };
+    };
+  }[];
+};
+
+const mockAlerts: any = {
+  count: 3,
+  items: [
+    {
+      item: {
+        id: "abc",
+        createdAt: "2025-09-11T08:00+09:00",
+        result: "accepted",
+        read: false,
+        application: {
+          item: {
+            id: "abcdefg",
+            status: "accepted",
+          },
+          href: "",
+        },
+        shop: {
+          item: {
+            id: "hijklmn",
+            name: "한국식당",
+            category: "한식",
+            address1: "서울시 종로구",
+            address2: "디테일한 주소",
+            description: "맛있는 밥집",
+            imageUrl: "이미지 주소",
+            originalHourlyPay: 10000,
+          },
+          href: "",
+        },
+        notice: {
+          item: {
+            id: "opqrstu",
+            hourlyPay: 12000,
+            description: "급하게 구합니다.",
+            startsAt: "2025-09-13T13:00+09:00",
+            workhour: 5,
+            closed: false,
+          },
+          href: "",
+        },
+      },
+    },
+    {
+      item: {
+        id: "123",
+        createdAt: "2025-09-11T09:00+09:00",
+        result: "rejected",
+        read: false,
+        application: {
+          item: {
+            id: "456",
+            status: "rejected",
+          },
+          href: "",
+        },
+        shop: {
+          item: {
+            id: "789",
+            name: "일본식당",
+            category: "일식",
+            address1: "서울시 종로구",
+            address2: "디테일한 주소",
+            description: "맛있는 밥집",
+            imageUrl: "이미지 주소",
+            originalHourlyPay: 10000,
+          },
+          href: "",
+        },
+        notice: {
+          item: {
+            id: "0123",
+            hourlyPay: 12000,
+            description: "급하게 구합니다.",
+            startsAt: "2025-09-15T11:00+09:00",
+            workhour: 5,
+            closed: false,
+          },
+          href: "",
+        },
+      },
+    },
+    {
+      item: {
+        id: "123gjh",
+        createdAt: "2025-09-11T10:00+09:00",
+        result: "rejected",
+        read: false,
+        application: {
+          item: {
+            id: "ds7f98",
+            status: "rejected",
+          },
+          href: "",
+        },
+        shop: {
+          item: {
+            id: "asdf078",
+            name: "중국식당",
+            category: "중식",
+            address1: "서울시 종로구",
+            address2: "디테일한 주소",
+            description: "맛있는 밥집",
+            imageUrl: "이미지 주소",
+            originalHourlyPay: 10000,
+          },
+          href: "",
+        },
+        notice: {
+          item: {
+            id: "1k234ghj",
+            hourlyPay: 12000,
+            description: "급하게 구합니다.",
+            startsAt: "2025-09-17T09:00+09:00",
+            workhour: 5,
+            closed: false,
+          },
+          href: "",
+        },
+      },
+    },
+  ],
+};
 
 const CustomHeader = ({
   isLoggedIn,
@@ -37,15 +186,29 @@ const CustomHeader = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [alerts, setAlerts] = useState<any>(); // !!!! any 대신에 올바른 타입을 넣을 수 있으면 넣는게 좋습니다.
   const modalRef = useRef<HTMLDivElement>(null);
 
   const q = router.query.q as string; // 쿼리스트링 q값을 받아옴.
+
+  const handleAlertsApi = async () => {
+    const userId = localStorage.getItem("userId");
+    const response = await authAxios.get(`/users/${userId}/alerts`);
+    return await response.data;
+  };
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      handleAlertsApi().then((data) => setAlerts(data));
+    }
+  }, []);
 
   //모달 외부 클릭시 모달창 종료
   useEffect(() => {
     const handleModalOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(!isOpen);
       }
     };
     if (isOpen) {
@@ -140,7 +303,10 @@ const CustomHeader = ({
           <div className={style.modal_container}>
             <Image
               className={style["alert-icon"]}
-              src={false ? "/alert-active.svg" : "/alert-inactive.svg"} // 이부분의 false 조건문도 alert api의 결과값이 존재하면 true, 없으면 false로 설정해주면 될 것 같습니다.
+              src={
+                // alerts && alerts.count > 0
+                mockAlerts.count ? "/alert-active.svg" : "/alert-inactive.svg"
+              } // !!!!! 이부분이 알림 개수 보여주는 부분입니다.
               width={24}
               height={24}
               alt="알림 버튼"
@@ -150,6 +316,11 @@ const CustomHeader = ({
               // 이 밑에 있는 NotificationModal안에 props로 데이터를 Notification Card까지 전달해주면 될 것 같습니다.
               <div className={style.modal} ref={modalRef}>
                 <NotificationModal
+                  alerts={
+                    // !!!!!! 이부분이 받아온 데이터 넣어주는곳 입니다.
+                    // alerts
+                    mockAlerts
+                  }
                   handleModalOpenClick={handleModalOpenClick}
                 />
               </div>
