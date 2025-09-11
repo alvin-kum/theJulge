@@ -9,8 +9,8 @@ import {
   ProfileContent,
   ProfileTextArea,
   NameSection,
-  ProfileLabel,
   ProfileName,
+  ProfileLabel,
   ContactRow,
   ContactIcon,
   ContactText,
@@ -21,36 +21,23 @@ import {
   EditButton,
   ApplicationsSection,
   ApplicationsTitle,
-  ApplicationsCard,
-  EmptyMessage,
-  ViewJobsButton,
-  ApplicationsTable,
-  TableHeader,
-  TableRow,
-  StatusBadge,
-  Pagination,
-  PageNumber,
 } from "./profile.styles";
-import { fetchMyInfo, fetchMyApplications } from "../../lib/api/user";
+import { fetchMyInfo } from "../../lib/api/user";
+// ✅ 신청 내역은 이 컴포넌트가 전담
+import ApplicationList from "@/components/Application"; // 경로 맞춰 수정
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
 
-    Promise.all([
-      fetchMyInfo(userId), // GET /users/{user_id}
-      fetchMyApplications(userId), // GET /users/{user_id}/applications
-    ])
-      .then(([u, apps]) => {
-        setUser(u);
-        setApplications(apps || []);
-      })
+    // ✅ 신청내역은 더 이상 여기서 안 불러옴
+    fetchMyInfo(userId)
+      .then((u) => setUser(u))
       .finally(() => setLoading(false));
   }, []);
 
@@ -70,12 +57,18 @@ export default function ProfilePage() {
           {/* ✅ 등록 전: 프로필 등록 카드만 */}
           {!hasProfile ? (
             <ProfileCard>
-              <EmptyMessage>
-                내 프로필을 등록하고 원하는 가게에 지원해 보세요.
-              </EmptyMessage>
-              <ViewJobsButton onClick={() => router.push("/profile/edit")}>
-                내 프로필 등록하기
-              </ViewJobsButton>
+              <ProfileContent>
+                <ProfileTextArea>
+                  <NameSection>
+                    <ProfileDescription>
+                      내 프로필을 등록하고 원하는 가게에 지원해 보세요.
+                    </ProfileDescription>
+                  </NameSection>
+                </ProfileTextArea>
+                <EditButton isNew onClick={() => router.push("/profile/edit")}>
+                  내 프로필 등록하기
+                </EditButton>
+              </ProfileContent>
             </ProfileCard>
           ) : (
             <>
@@ -115,69 +108,15 @@ export default function ProfilePage() {
                 </ProfileContent>
               </ProfileCard>
 
-              {/* ✅ 신청 내역은 프로필 등록된 경우만 표시 */}
+              {/* ✅ 신청 내역: 항상 ApplicationList만 렌더 (빈/로딩/데이터는 내부에서 처리) */}
               <ApplicationsSection>
                 <ApplicationsTitle>신청 내역</ApplicationsTitle>
-
-                {applications.length === 0 ? (
-                  <ApplicationsCard>
-                    <EmptyMessage>아직 신청 내역이 없어요.</EmptyMessage>
-                    <ViewJobsButton
-                      onClick={() => router.push("/profile/testApplications")}
-                    >
-                      공고 보러가기
-                    </ViewJobsButton>
-                  </ApplicationsCard>
-                ) : (
-                  <>
-                    <ApplicationsTable>
-                      <TableHeader>
-                        <div>가게</div>
-                        <div>일시</div>
-                        <div>시급</div>
-                        <div>상태</div>
-                      </TableHeader>
-
-                      {applications.map((app: any, index: number) => (
-                        <TableRow key={app.id || index}>
-                          <div>{app.shop?.name || "HS 과일주스"}</div>
-                          <div>2023-01-12 10:00 ~ 12:00 (2시간)</div>
-                          <div>15,000원</div>
-                          <div>
-                            <StatusBadge status={app.status || "승인완료"}>
-                              {app.status === "approved"
-                                ? "승인완료"
-                                : app.status === "rejected"
-                                ? "거절"
-                                : app.status === "pending"
-                                ? "대기"
-                                : "승인완료"}
-                            </StatusBadge>
-                          </div>
-                        </TableRow>
-                      ))}
-                    </ApplicationsTable>
-
-                    <Pagination>
-                      <span>‹</span>
-                      <PageNumber active>1</PageNumber>
-                      <PageNumber>2</PageNumber>
-                      <PageNumber>3</PageNumber>
-                      <PageNumber>4</PageNumber>
-                      <PageNumber>5</PageNumber>
-                      <PageNumber>6</PageNumber>
-                      <PageNumber>7</PageNumber>
-                      <span>›</span>
-                    </Pagination>
-                  </>
-                )}
+                <ApplicationList userId={user.id} />
               </ApplicationsSection>
             </>
           )}
         </ProfileSection>
       </Container>
-
-      
     </Wrapper>
   );
 }

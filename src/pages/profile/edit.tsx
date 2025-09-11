@@ -10,9 +10,8 @@ import {
   ButtonWrapper,
   SubmitButton,
   Label,
-  CloseButton, 
+  CloseButton,
 } from "./profileEdit.styles";
-
 
 import Modal from "@/components/Modal";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";
@@ -27,6 +26,7 @@ export default function ProfileEditPage() {
   const [description, setDescription] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false); // ✅ 수정/등록 모드 구분
 
   // ✅ 페이지 로드 시 기존 정보 불러오기
   useEffect(() => {
@@ -39,6 +39,10 @@ export default function ProfileEditPage() {
         setPhone(data.phone || "");
         setRegion(data.address || "");
         setDescription(data.bio || "");
+
+        // ✅ 이름과 연락처가 있으면 수정 모드로 판단
+        const editing = Boolean(data.name && data.phone);
+        setIsEditMode(editing);
       })
       .catch((err) => {
         console.error("내 프로필 불러오기 실패", err);
@@ -60,10 +64,10 @@ export default function ProfileEditPage() {
         bio: description,
       });
 
-      setIsModalOpen(true);
+      setIsModalOpen(true); // ✅ 등록 또는 수정 성공 시 모달 열기
     } catch (err) {
-      console.error("프로필 등록 실패", err);
-      alert("프로필 등록에 실패했습니다.");
+      console.error("프로필 저장 실패", err);
+      alert("프로필 저장에 실패했습니다.");
     }
   };
 
@@ -101,57 +105,63 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-              <Label>선호 지역</Label>
-              <InputField
-                as="select"
-                value={region}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRegion(e.target.value)}
-              >
-                <option value="">선택</option>
-                <option>서울시 강남구</option>
-                <option>서울시 강동구</option>
-                <option>서울시 강북구</option>
-                <option>서울시 강서구</option>
-                <option>서울시 관악구</option>
-                <option>서울시 광진구</option>
-                <option>서울시 구로구</option>
-                <option>서울시 금천구</option>
-                <option>서울시 노원구</option>
-                <option>서울시 도봉구</option>
-                <option>서울시 동대문구</option>
-                <option>서울시 동작구</option>
-                <option>서울시 마포구</option>
-                <option>서울시 서대문구</option>
-                <option>서울시 서초구</option>
-                <option>서울시 성동구</option>
-                <option>서울시 성북구</option>
-                <option>서울시 송파구</option>
-                <option>서울시 양천구</option>
-                <option>서울시 영등포구</option>
-                <option>서울시 용산구</option>
-                <option>서울시 은평구</option>
-                <option>서울시 종로구</option>
-                <option>서울시 중구</option>
-                <option>서울시 중랑구</option>
-              </InputField>
-            </div>
-          </FormRow>
-
-          <div>
-            <Label>소개</Label>
-            <TextArea
-              placeholder="입력"
-              value={description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-            />
+            <Label>선호 지역</Label>
+            <InputField
+              as="select"
+              value={region}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRegion(e.target.value)}
+            >
+              <option value="">선택</option>
+              <option>서울시 강남구</option>
+              <option>서울시 강동구</option>
+              <option>서울시 강북구</option>
+              <option>서울시 강서구</option>
+              <option>서울시 관악구</option>
+              <option>서울시 광진구</option>
+              <option>서울시 구로구</option>
+              <option>서울시 금천구</option>
+              <option>서울시 노원구</option>
+              <option>서울시 도봉구</option>
+              <option>서울시 동대문구</option>
+              <option>서울시 동작구</option>
+              <option>서울시 마포구</option>
+              <option>서울시 서대문구</option>
+              <option>서울시 서초구</option>
+              <option>서울시 성동구</option>
+              <option>서울시 성북구</option>
+              <option>서울시 송파구</option>
+              <option>서울시 양천구</option>
+              <option>서울시 영등포구</option>
+              <option>서울시 용산구</option>
+              <option>서울시 은평구</option>
+              <option>서울시 종로구</option>
+              <option>서울시 중구</option>
+              <option>서울시 중랑구</option>
+            </InputField>
           </div>
+        </FormRow>
+
+        <div>
+          <Label>소개</Label>
+          <TextArea
+            placeholder="입력"
+            value={description}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+          />
+        </div>
+
         <ButtonWrapper>
-          <SubmitButton onClick={handleSubmit}>등록하기</SubmitButton>
+          <SubmitButton onClick={handleSubmit}>
+            {isEditMode ? "수정하기" : "등록하기"}
+          </SubmitButton>
         </ButtonWrapper>
       </ProfileContainer>
 
       {isModalOpen && (
-        <Modal message="등록이 완료되었습니다." onClose={handleCloseModal} />
+        <Modal
+          message={isEditMode ? "수정이 완료되었습니다." : "등록이 완료되었습니다."}
+          onClose={handleCloseModal}
+        />
       )}
     </PageWrapper>
   );
