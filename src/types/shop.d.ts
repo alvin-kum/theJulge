@@ -34,11 +34,7 @@ export interface Notice {
 }
 
 // PostData 타입을 여기에 정의
-<<<<<<< HEAD
-export interface PostData extends Omit<Notice, 'id'> {
-=======
 export interface PostData extends Omit<Notice, "id"> {
->>>>>>> 7aedd14ff6b3c64f2262bd8877c014548467abb4
   id: string; // Post 컴포넌트에서 필요한 number 타입 id
   shopId: string; // shop ID 추가
 }
