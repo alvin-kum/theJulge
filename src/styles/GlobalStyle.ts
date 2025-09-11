@@ -19,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html, body {
-    font-family: 'SpoqaHanSansNeo', Pretendard, -apple-system, system-ui, sans-serif;
+    font-family: 'Spoqa Han Sans Neo', Pretendard, -apple-system, system-ui, sans-serif;
     font-size: 16px;
     color: #111;
     background-color: #fff;

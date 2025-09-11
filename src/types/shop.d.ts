@@ -34,7 +34,11 @@ export interface Notice {
 }
 
 // PostData 타입을 여기에 정의
+<<<<<<< HEAD
 export interface PostData extends Omit<Notice, 'id'> {
+=======
+export interface PostData extends Omit<Notice, "id"> {
+>>>>>>> 7aedd14ff6b3c64f2262bd8877c014548467abb4
   id: string; // Post 컴포넌트에서 필요한 number 타입 id
   shopId: string; // shop ID 추가
 }
@@ -48,7 +52,7 @@ export interface ShopFilters {
   address?: string[];
   category?: string;
   keyword?: string;
-  sort?: 'name' | 'category' | 'pay';
+  sort?: "name" | "category" | "pay";
 }
 
 export interface CreateShopForm {
@@ -70,7 +74,7 @@ export interface NoticeFormData {
 
 export interface Application {
   id: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'canceled';
+  status: "pending" | "accepted" | "rejected" | "canceled";
   createdAt: string;
   user: {
     id: string;
@@ -81,12 +85,12 @@ export interface Application {
   notice: Notice;
 }
 
-export type ShopCategory = 
-  | '음식점'
-  | '카페'
-  | '편의점'
-  | '마트'
-  | '배달'
-  | '서비스업'
-  | '사무직'
-  | '기타';
+export type ShopCategory =
+  | "음식점"
+  | "카페"
+  | "편의점"
+  | "마트"
+  | "배달"
+  | "서비스업"
+  | "사무직"
+  | "기타";
