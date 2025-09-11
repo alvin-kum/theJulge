@@ -1,11 +1,10 @@
 // src/pages/login.tsx
-
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
-import Input from "@/components/FormInput";
+import Input from "@/components/Input/Input";
 import CustomButton from "@/components/Button/CustomButton";
-import { login } from "../../lib/api/auth";
+import { login } from "@/lib/api/auth"; // 경로 정리
 import {
   Wrapper,
   FormContainer,
@@ -15,16 +14,19 @@ import {
   SignupLink,
   ErrorText,
 } from "./login.styles";
-import Modal from "../../components/Modal/Modal"; // 공통 모달 import
+import Modal from "../../components/Modal/Modal"; // 공통 모달 import // 경로 정리
+import type { AxiosError } from "axios";
 
 export default function LoginPage() {
   const router = useRouter();
+  const next = typeof router.query.next === "string" ? router.query.next : null;
 
   // 상태 관리
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // 모달 상태
   const [modalMessage, setModalMessage] = useState("");
@@ -34,32 +36,22 @@ export default function LoginPage() {
     setModalMessage(message);
     setIsModalOpen(true);
   };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const closeModal = () => setIsModalOpen(false);
 
   // 이메일 유효성 검사
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(value);
   };
-
   const handleEmailBlur = () => {
-    if (!validateEmail(email)) {
-      setEmailError("이메일 형식으로 작성해 주세요.");
-    } else {
-      setEmailError("");
-    }
+    if (!validateEmail(email)) setEmailError("이메일 형식으로 작성해 주세요.");
+    else setEmailError("");
   };
 
   // 비밀번호 유효성 검사
   const handlePasswordBlur = () => {
-    if (password.length < 8) {
-      setPasswordError("8자 이상 작성해 주세요.");
-    } else {
-      setPasswordError("");
-    }
+    if (password.length < 8) setPasswordError("8자 이상 작성해 주세요.");
+    else setPasswordError("");
   };
 
   // 로그인 버튼 클릭
@@ -68,34 +60,50 @@ export default function LoginPage() {
       openModal("이메일과 비밀번호를 입력해주세요.");
       return;
     }
-
+    if (!validateEmail(email)) {
+      openModal("이메일 형식을 확인해주세요.");
+      return;
+    }
     if (password.length < 8) {
       openModal("비밀번호가 8자 이상이어야 합니다.");
       return;
     }
 
     try {
-      // ✅ 실제 로그인 API 호출
-      const res = await login(email, password);
+      setLoading(true);
 
-      // 여기서 auth.ts가 알아서 localStorage에 token 저장함
+      // ✅ 실제 로그인 API 호출 (토큰/유저정보는 auth.ts에서 localStorage에 저장)
+      const res = await login(email, password);
+      const userType = res.item.user.item.type as "employer" | "employee";
+
+      // 안내 모달 (선택)
       openModal("로그인 성공!");
 
-      // 로그인 성공 후 페이지 이동
+      // ✅ next 파라미터가 있으면 원래 보던 페이지로 복귀
+      // 없으면 역할별 기본 라우팅
       setTimeout(() => {
-        router.push("/"); // 공고 리스트 페이지
-      }, 1000);
-    } catch (error: any) {
-      // 서버에서 오는 에러 메시지 처리
-      if (error.response?.data?.message) {
-        openModal(error.response.data.message);
-      } else {
-        openModal("로그인에 실패했습니다. 다시 시도해주세요.");
-      }
+        if (next) {
+          router.replace(next);
+        } else {
+          if (userType === "employer")
+            router.replace("/shops/create"); // 사장님 기본 진입
+          else router.replace("/profile"); // 알바 기본 진입
+          // 필요시 공고 리스트가 기본이면: router.replace("/");
+        }
+      }, 600);
+    } catch (e: unknown) {
+      const err = e as AxiosError<{ message?: string }>;
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "로그인에 실패했습니다. 다시 시도해주세요.";
+      openModal(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 로고 클릭 → 공고 리스트로 이동
+  // 로고 클릭 → 공고 리스트(또는 원하는 경로)로 이동
   const handleLogoClick = () => {
     router.push("/");
   };
@@ -103,6 +111,8 @@ export default function LoginPage() {
   // 회원가입 클릭 → 회원가입 페이지로 이동
   const handleSignupClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    // 회원가입도 next를 이어가고 싶다면 아래처럼 전달:
+    // router.push(`/signup${next ? `?next=${encodeURIComponent(next)}` : ""}`);
     router.push("/signup");
   };
 
@@ -110,13 +120,7 @@ export default function LoginPage() {
     <Wrapper>
       <FormContainer>
         <Logo onClick={handleLogoClick}>
-          <Image
-            src="/logo.svg"
-            alt="Logo"
-            width={248} // 원하는 크기 지정
-            height={45}
-            priority
-          />
+          <Image src="/logo.svg" alt="Logo" width={248} height={45} priority />
         </Logo>
 
         <Label>이메일</Label>
@@ -142,6 +146,9 @@ export default function LoginPage() {
           }
           onBlur={handlePasswordBlur}
           isError={!!passwordError}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter" && !loading) handleLogin();
+          }}
         />
         {passwordError && <ErrorText>{passwordError}</ErrorText>}
 
@@ -149,8 +156,8 @@ export default function LoginPage() {
           <CustomButton
             size="fill"
             color="primary"
-            disabled={false}
-            text="로그인 하기"
+            disabled={loading}
+            text={loading ? "로그인 중..." : "로그인 하기"}
             handleClick={handleLogin}
           />
         </div>

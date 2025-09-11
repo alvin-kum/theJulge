@@ -78,6 +78,7 @@
 .alert-icon {
   width: 24px;
   height: 24px;
+  max-width: none;
   cursor: pointer;
 }
 

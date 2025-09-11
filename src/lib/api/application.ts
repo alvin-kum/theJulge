@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export interface Application {
+  authorization?: { token: string };
   id: string;
   status: "pending" | "accepted" | "rejected" | "canceled";
   createdAt: string;
@@ -28,11 +29,15 @@ export interface Application {
 
 // 공고에 지원하기
 export const applyToNotice = async (
+  authorization: { token: string } | undefined,
   shopId: string,
   noticeId: string
 ): Promise<{ item: Application }> => {
   const response = await axios.post(
-    `/shops/${shopId}/notices/${noticeId}/applications`
+    `/shops/${shopId}/notices/${noticeId}/applications`,
+    {
+      headers: { Authorization: `Bearer ${authorization?.token}` },
+    }
   );
   return response.data;
 };
