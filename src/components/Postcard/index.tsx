@@ -15,7 +15,7 @@ import {
 import HourlyPayBadge from "@/components/HourlyPayBadge";
 
 export interface PostProps {
-  id: number;
+  id: string;
   imageUrl: string;
   name: string;
   startsAt: string; // "2025-01-02T15:00:00"
@@ -23,6 +23,7 @@ export interface PostProps {
   address1: string;
   hourlyPay: number;
   originalHourlyPay: number;
+  isClosed?: boolean;
   onClick?: () => void;
 }
 

@@ -6,6 +6,7 @@ import NoticeInfoCard from "../../../../components/notice/noticeInfoCard";
 import { getShopNotice, type Notice } from "@/lib/api/notice";
 import { AxiosError } from "axios";
 import { addNewNotice } from "@/utils/recentNotice";
+import NoticeRecent from "@/components/notice/noticeRecent/noticeRecent";
 
 const BREAKPOINTS = {
   mobile: 767, // ≤ 767
@@ -13,11 +14,6 @@ const BREAKPOINTS = {
   // desktop: ≥ 1200
 };
 
-// SSR 문제 분리용: 필요 없으면 { ssr: true } 또는 그냥 일반 import로 바꿔도 됩니다.
-// const NoticeInfoCard = dynamic(
-//   () => import("@/components/notice/noticeInfoCard"),
-//   { ssr: true }
-// );
 export default function NoticeDetailPage() {
   const { query } = useRouter();
   const shopId = typeof query.shopId === "string" ? query.shopId : "";
@@ -103,6 +99,7 @@ export default function NoticeDetailPage() {
     .join(" ");
   const startsAtText = notice?.startsAt ?? "";
   const workHourText = notice?.workhour ?? 0;
+
   // const wagePercentage = notice?.wagePercentage ?? 0;
 
   if (err) return <p>{err}</p>;
@@ -118,27 +115,31 @@ export default function NoticeDetailPage() {
     return <div style={{ padding: 24 }}>잘못된 경로</div>;
 
   return (
-    <Wrap>
-      <NoticeInfoCard
-        shopId={shopId as string}
-        noticeId={noticeId as string}
-        category={category}
-        shopName={shopName}
-        imageUrl={imageUrl}
-        hourlyPay={hourlyPay}
-        isClosed={isClosed}
-        shopDesc={shopDesc}
-        noticeDesc={noticeDesc}
-        address={address}
-        startsAtText={startsAtText}
-        workHourText={workHourText}
-      />
-
+    <>
+      <Wrap>
+        <NoticeInfoCard
+          shopId={shopId as string}
+          noticeId={noticeId as string}
+          category={category}
+          shopName={shopName}
+          imageUrl={imageUrl}
+          hourlyPay={hourlyPay}
+          isClosed={isClosed}
+          shopDesc={shopDesc}
+          noticeDesc={noticeDesc}
+          address={address}
+          startsAtText={startsAtText}
+          workHourText={workHourText}
+        />
+      </Wrap>
       <Section>
-        {/* <SectionTitle>신청자 목록</SectionTitle> */}
+        <NoticeRecent />
+      </Section>
 
-        {/* 데스크탑/태블릿: 테이블, 모바일: 카드 리스트 */}
-        {/* <ApplicantsCard>
+      {/* <SectionTitle>신청자 목록</SectionTitle> */}
+
+      {/* 데스크탑/태블릿: 테이블, 모바일: 카드 리스트 */}
+      {/* <ApplicantsCard>
           <ApplicantsTable>
             <thead>
               <tr>
@@ -210,8 +211,7 @@ export default function NoticeDetailPage() {
             </button>
           </Pagination>
         </ApplicantsCard> */}
-      </Section>
-    </Wrap>
+    </>
   );
 }
 
@@ -244,7 +244,7 @@ const Wrap = styled.div`
   align-items: center;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 20px 16px 64px;
+  /* padding: 20px 16px 64px; */
   color: var(--text);
 `;
 
@@ -262,11 +262,12 @@ const Chip = styled.span<{ tone?: "primary" | "muted" }>`
 `;
 
 const Section = styled.section`
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  margin: 0 auto;
+  max-width: 1100px;
+  /* padding: 20px 72px 64px; */
 `;
 
 const SectionTitle = styled.h2`

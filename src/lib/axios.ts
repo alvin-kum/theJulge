@@ -26,3 +26,22 @@ authAxios.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// 응답 인터셉터: 토큰 만료/401이면 로그인 페이지로 리다이렉트
+authAxios.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (typeof window !== "undefined") {
+      const status = err?.response?.status;
+      if (status === 401) {
+        // 토큰 제거
+        localStorage.removeItem("accessToken");
+
+        // 현재 경로를 next 파라미터로 붙여서 로그인 페이지로 보냄
+        const next = window.location.pathname + window.location.search;
+        window.location.href = `/login?next=${encodeURIComponent(next)}`;
+      }
+    }
+    return Promise.reject(err);
+  }
+);
