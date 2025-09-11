@@ -3,7 +3,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
-import Input from "@/components/Input/Input";
+import Input from "@/components/FormInput";
 import CustomButton from "@/components/Button/CustomButton";
 import { login } from "../../lib/api/auth";
 import {
@@ -15,7 +15,7 @@ import {
   SignupLink,
   ErrorText,
 } from "./login.styles";
-import Modal from "../../components/Modal"; // 공통 모달 import
+import Modal from "../../components/Modal/Modal"; // 공통 모달 import
 
 export default function LoginPage() {
   const router = useRouter();

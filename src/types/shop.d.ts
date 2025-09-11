@@ -33,9 +33,10 @@ export interface Notice {
   originalHourlyPay: number;
 }
 
-// PostData 타입을 여기에 정의 (중복 제거)
+// PostData 타입을 여기에 정의
 export interface PostData extends Omit<Notice, 'id'> {
   id: number; // Post 컴포넌트에서 필요한 number 타입 id
+  shopId: string; // shop ID 추가
 }
 
 // 나머지 기존 인터페이스들...

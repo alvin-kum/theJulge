@@ -12,7 +12,7 @@ import {
   Label,
 } from "./profileEdit.styles";
 
-import Modal from "../../components/Modal";
+import Modal from "../../components/Modal/Modal";
 import { updateMyProfile, fetchMyInfo } from "../../lib/api/user";
 
 export default function ProfileEditPage() {
