@@ -38,7 +38,7 @@ const LoadingSpinner = styled.div`
 
   @keyframes spin {
     0% {
-      transform: rotate(0deg);
+      transform: rotate(0);
     }
     100% {
       transform: rotate(360deg);
@@ -50,10 +50,13 @@ export default function Shop() {
   const router = useRouter();
 
   useEffect(() => {
-    // 바로 가게 관리 페이지로 리다이렉트
-    const shopId = "422a49b1-75b7-4242-b00b-d678bed6573b";
-    console.log("🚀 가게 관리 페이지로 바로 이동");
-    router.replace(`/shop/manage?id=${shopId}`);
+    const urlId = router.query.id as string | undefined;
+    const savedId =
+      typeof window !== "undefined" ? localStorage.getItem("myShopId") || undefined : undefined;
+    const finalId = urlId || savedId;
+
+    if (finalId) router.replace(`/shop/manage?id=${finalId}`);
+    else router.replace(`/shop/register`);
   }, [router]);
 
   return (

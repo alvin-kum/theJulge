@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { apiClient } from '@/lib/api/client';
+import { uploadImage } from "@/lib/api/image";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -280,52 +281,46 @@ export default function ShopRegister() {
     }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setImagePreview(result);
-        setFormData(prev => ({ ...prev, imageUrl: result }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const url = await uploadImage(file);
+      setImagePreview(url);
+      setFormData((prev) => ({ ...prev, imageUrl: url }));
+    } catch (err) {
+      console.error(err);
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      alert('가게 이름을 입력해주세요.');
-      return;
-    }
-    
-    if (!formData.address2.trim()) {
-      alert('상세 주소를 입력해주세요.');
-      return;
-    }
-    
-    if (formData.originalHourlyPay < 9620) {
-      alert('기본 시급은 최저시급(9,620원) 이상이어야 합니다.');
-      return;
-    }
+
+    if (!formData.name.trim()) return alert("가게 이름을 입력해주세요.");
+    if (!formData.address2.trim()) return alert("상세 주소를 입력해주세요.");
+    if (formData.originalHourlyPay < 9620)
+      return alert("기본 시급은 최저시급(9,620원) 이상이어야 합니다.");
 
     setLoading(true);
     try {
-      const response = await apiClient.post('/shops', formData);
-      alert('가게가 등록되었습니다.');
-      
-      // 등록된 가게의 ID로 관리 페이지로 이동
-      if (response.item && response.item.id) {
-        router.push(`/shop/manage?id=${response.item.id}`);
+      const response = await apiClient.post("/shops", formData);
+      alert("가게가 등록되었습니다.");
+
+      const newId = response?.item?.id;
+      if (newId) {
+        localStorage.setItem("myShopId", newId);
+        router.push(`/shop/manage?id=${newId}`);
       } else {
-        // 응답에 ID가 없으면 일반 shop 페이지로
-        router.push('/shop');
+        router.push("/shop");
       }
     } catch (error) {
-      console.error('Failed to register shop:', error);
-      alert('등록에 실패했습니다.');
+      console.error("Failed to register shop:", error);
+      alert("등록에 실패했습니다.");
     } finally {
       setLoading(false);
     }
