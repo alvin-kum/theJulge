@@ -25,6 +25,9 @@ export const Logo = styled.div`
   text-align: center;
   margin-bottom: 32px;
   cursor: pointer;
+  img {
+    display: inline-block;
+  }
 `;
 
 export const Label = styled.label`
