@@ -39,6 +39,8 @@ export default function HomePage() {
       const newPosts: PostData[] = res.items.map(({ item }) =>
         transformNoticeToPostData(item)
       );
+      console.log("res: ", res);
+      console.log("newPosts: ", newPosts);
       setPosts((prev) => [...prev, ...newPosts]);
       setHasNext(res.hasNext);
     } catch (err: any) {

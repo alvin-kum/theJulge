@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Modal from "@/components/Modal";
+import Modal from "@/components/Modal/Modal";
 
 // ✅ 당신 프로젝트의 API 경로에 맞게 import
 import { getShopNotice } from "@/lib/api/notice"; // (shopId, noticeId) → notice item
