@@ -86,8 +86,8 @@ export default function LoginPage() {
           router.replace(next);
         } else {
           if (userType === "employer")
-            router.replace("/shops/create"); // 사장님 기본 진입
-          else router.replace("/profile"); // 알바 기본 진입
+            router.replace("/"); 
+          else router.replace("/"); 
           // 필요시 공고 리스트가 기본이면: router.replace("/");
         }
       }, 600);
