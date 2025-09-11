@@ -34,7 +34,7 @@ import { applyNotice, cancelNotice } from "@/lib/api/apply";
 import { fetchMyInfo } from "@/lib/api/user";
 import { hasProfileFilled } from "@/utils/checkProfile";
 import { useRouter } from "next/router";
-import Modal from "../Modal";
+import Modal from "../Modal/Modal";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 
