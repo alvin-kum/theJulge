@@ -8,6 +8,7 @@ export const ListWrap = styled.ul<Props>`
   display: flex;
   gap: 0.4rem;
   justify-content: flex-start;
+  list-style: none;
 
   @media (min-width: 768px) {
     gap: 1.4rem;

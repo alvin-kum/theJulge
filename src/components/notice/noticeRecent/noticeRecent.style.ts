@@ -4,7 +4,7 @@ export const RecentWrap = styled.div`
   display: flex;
   gap: 16px;
   flex-direction: column;
-  padding: 40px 0 40px;
+  margin: 0 auto;
 
   @media (min-width: 768px) {
     padding: 60px 0;

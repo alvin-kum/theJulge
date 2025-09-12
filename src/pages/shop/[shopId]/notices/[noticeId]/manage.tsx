@@ -195,7 +195,7 @@ export default function EmployerNoticeManagePage() {
             {apps.map((a) => (
               <tr key={a.id}>
                 <td>{new Date(a.createdAt).toLocaleString()}</td>
-                <td>{a.user?.item?.id ?? "-"}</td>
+                <td>{a.user?.item?.name ?? "-"}</td>
                 <td>
                   <Chip
                     $tone={
@@ -266,6 +266,10 @@ export default function EmployerNoticeManagePage() {
 
 /* ======================= styled ======================= */
 const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
   --border: #e5e7eb;
   --accent: #ff6b3d;
   --muted: #6b7280;
@@ -276,8 +280,10 @@ const Wrap = styled.div`
   color: var(--text);
 `;
 const Hero = styled.section`
-  display: grid;
-  grid-template-columns: 44% 1fr;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0;
+  width: 70%;
   gap: 24px;
   margin-bottom: 28px;
   @media (max-width: 1199px) {
@@ -315,6 +321,10 @@ const V = styled.span`
 `;
 
 const Section = styled.section`
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  width: 70%;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -322,6 +332,7 @@ const Section = styled.section`
   margin-top: 16px;
 `;
 const SectionTitle = styled.h2`
+  padding: 0 10px;
   margin: 0 0 12px;
   font-size: 18px;
 `;

@@ -9,7 +9,14 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "placehold.co" },
       { protocol: "https", hostname: "test.com" },
-      { protocol: "https", hostname: "bootcamp-project-api.s3.ap-northeast-2.amazonaws.com" },
+      {
+        protocol: "https",
+        hostname: "search.pstatic.net",
+      },
+      {
+        protocol: "https",
+        hostname: "bootcamp-project-api.s3.ap-northeast-2.amazonaws.com",
+      },
       // 필요하다면 다른 S3 버킷이나 CDN 호스트도 여기에 추가
       // 예) { protocol: "https", hostname: "**.s3.ap-northeast-2.amazonaws.com" },
     ],

@@ -75,6 +75,7 @@ function NoticeInfoCard({
 
   // 공고별로 보관할 storage key
   const storageKey = `applicationId_${noticeId}`;
+  const userType = localStorage.getItem("userType");
   // 모달 상태
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState<"login" | "profile" | "info">(
@@ -187,6 +188,18 @@ function NoticeInfoCard({
           disabled={true}
           handleClick={() => {}}
           text="신청 불가"
+        />
+      );
+    }
+
+    if (userType === "employer") {
+      return (
+        <Button
+          size="fill"
+          color="primary"
+          disabled={true}
+          handleClick={() => {}}
+          text="사장님은 신청하실 수 없습니다."
         />
       );
     }
