@@ -14,7 +14,12 @@ export interface Application {
   status: ApplicationStatus;
   createdAt: string;
   user?: {
-    item: { id: string; email?: string; type?: "employer" | "employee" };
+    item: {
+      id: string;
+      email?: string;
+      type?: "employer" | "employee";
+      name: string;
+    };
     href?: string;
   };
   notice?: {
