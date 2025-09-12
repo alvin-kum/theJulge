@@ -24,11 +24,11 @@ export default function ProfileEditPage() {
   const [phone, setPhone] = useState("");
   const [region, setRegion] = useState("");
   const [description, setDescription] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isEditMode, setIsEditMode] = useState(false); // ✅ 수정/등록 모드 구분
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  // ✅ 페이지 로드 시 기존 정보 불러오기
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
@@ -40,7 +40,6 @@ export default function ProfileEditPage() {
         setRegion(data.address || "");
         setDescription(data.bio || "");
 
-        // ✅ 이름과 연락처가 있으면 수정 모드로 판단
         const editing = Boolean(data.name && data.phone);
         setIsEditMode(editing);
       })
@@ -50,9 +49,37 @@ export default function ProfileEditPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    let formatted = raw;
+
+    if (raw.length <= 3) {
+      formatted = raw;
+    } else if (raw.length <= 7) {
+      formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+    } else if (raw.length <= 11) {
+      formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+    }
+
+    setPhone(formatted);
+
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    if (!phoneRegex.test(formatted)) {
+      setPhoneError("연락처 형식이 올바르지 않습니다. 예: 010-1234-5678");
+    } else {
+      setPhoneError("");
+    }
+  };
+
   const handleSubmit = async () => {
     if (!name || !phone) {
       alert("이름과 연락처는 필수입니다.");
+      return;
+    }
+
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("연락처 형식이 잘못되었습니다. 예: 010-1234-5678");
       return;
     }
 
@@ -64,7 +91,7 @@ export default function ProfileEditPage() {
         bio: description,
       });
 
-      setIsModalOpen(true); // ✅ 등록 또는 수정 성공 시 모달 열기
+      setIsModalOpen(true);
     } catch (err) {
       console.error("프로필 저장 실패", err);
       alert("프로필 저장에 실패했습니다.");
@@ -98,10 +125,15 @@ export default function ProfileEditPage() {
           <div>
             <Label>연락처*</Label>
             <InputField
-              placeholder="입력"
+              placeholder="예: 010-1234-5678"
               value={phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
+              onChange={handlePhoneChange}
             />
+            {phoneError && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {phoneError}
+              </p>
+            )}
           </div>
 
           <div>

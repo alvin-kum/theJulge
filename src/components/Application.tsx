@@ -1,31 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/router";
 import { typography } from "@/styles/typography";
-// import { apiClient } from "@/lib/api/client"; // 서버 붙일 때 주석 해제
+import { getMyApplications } from "@/lib/api/application";
 
 interface ApplicationListProps {
   userId: string;
-}
-
-interface ApplicationItem {
-  id: string;
-  status: "pending" | "accepted" | "rejected" | "canceled";
-  createdAt: string;
-  shop: {
-    item: {
-      id: string;
-      name: string;
-    };
-  };
-  notice: {
-    item: {
-      id: string;
-      startsAt: string;
-      workhour: number;
-      hourlyPay: number;
-      description: string;
-    };
-  };
 }
 
 const Wrapper = styled.div`
@@ -45,11 +25,16 @@ const Table = styled.table`
   ${typography.body1Regular}
 
   thead {
-    background-color: #fff4f2;
+    background-color: #FFEBE7;
+  }
+
+  thead th {
+    background-color: #FFEBE7 !important;
   }
 
   td {
-  ${typography.body2Regular}
+    ${typography.body2Regular}
+    background-color: #FFFFFF;
   }
 
   th,
@@ -60,22 +45,15 @@ const Table = styled.table`
     white-space: nowrap;
   }
 
-  th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    min-width: 120px;
-  }
-
+  th:first-child,
   td:first-child {
     position: sticky;
     left: 0;
-    background-color: #fff; 
     z-index: 1;
     min-width: 120px;
+    background-color: #fff;
   }
 
-  /* 태블릿 이하에서는 "시급" 숨김 */
   @media (max-width: 744px) {
     th:nth-child(3),
     td:nth-child(3) {
@@ -83,7 +61,6 @@ const Table = styled.table`
     }
   }
 
-  /* 모바일에서는 "일자, 시급" 숨김 */
   @media (max-width: 480px) {
     th:nth-child(2),
     td:nth-child(2),
@@ -124,6 +101,32 @@ const Message = styled.div`
   color: #666;
 `;
 
+const EmptyState = styled.div`
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  background: #fff;
+  margin-top: 20px;
+`;
+
+const EmptyMessage = styled.div`
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 16px;
+`;
+
+const GoButton = styled.button`
+  background-color: #ea3a00;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+`;
+
 const Pagination = styled.div`
   display: flex;
   justify-content: center;
@@ -157,119 +160,32 @@ const Pagination = styled.div`
 `;
 
 const ApplicationList: React.FC<ApplicationListProps> = ({ userId }) => {
-  const [applications, setApplications] = useState<ApplicationItem[]>([]);
+  const router = useRouter();
+  const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const limit = 5; // 한 페이지에 보여줄 개수
+
+  const limit = 5; // ✅ 페이지당 최대 5개로 제한
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
+        if (!userId) return;
         setLoading(true);
-
-        // 🚧 서버 연동시 이 부분 사용
-        /*
-        const res = await apiClient.get<{
-          items: { item: ApplicationItem }[];
-          count: number;
-        }>(`/users/${userId}/applications?limit=${limit}&offset=${(page - 1) * limit}`);
-        
-        const items = res.items?.map((entry: any) => entry.item) || [];
+        const offset = (page - 1) * limit;
+        const res = await getMyApplications(userId, { limit, offset });
+        const items = res.items;
         setApplications(items);
-        setTotalCount(res.count || 0);
-        */
-
-        // ✅ 목업 데이터 (테스트용)
-        const mockItems: ApplicationItem[] = [
-          {
-            id: "1",
-            status: "accepted",
-            createdAt: "2023-01-12T10:00:00Z",
-            shop: { item: { id: "s1", name: "HS 과일주스" } },
-            notice: {
-              item: {
-                id: "n1",
-                description: "주말 알바",
-                startsAt: "2023-01-12T10:00:00Z",
-                workhour: 2,
-                hourlyPay: 15000,
-              },
-            },
-          },
-          {
-            id: "2",
-            status: "accepted",
-            createdAt: "2023-01-12T10:00:00Z",
-            shop: { item: { id: "s2", name: "써니 브런치 레스토랑" } },
-            notice: {
-              item: {
-                id: "n2",
-                description: "평일 서빙 알바",
-                startsAt: "2023-01-12T10:00:00Z",
-                workhour: 2,
-                hourlyPay: 15000,
-              },
-            },
-          },
-          {
-            id: "3",
-            status: "rejected",
-            createdAt: "2023-01-12T10:00:00Z",
-            shop: { item: { id: "s3", name: "수리 에스프레소 샵" } },
-            notice: {
-              item: {
-                id: "n3",
-                description: "바리스타 단기 알바",
-                startsAt: "2023-01-12T10:00:00Z",
-                workhour: 2,
-                hourlyPay: 15000,
-              },
-            },
-          },
-          {
-            id: "4",
-            status: "pending",
-            createdAt: "2023-01-12T10:00:00Z",
-            shop: { item: { id: "s4", name: "너구리네 라면집" } },
-            notice: {
-              item: {
-                id: "n4",
-                description: "라면 조리 단기",
-                startsAt: "2023-01-12T10:00:00Z",
-                workhour: 2,
-                hourlyPay: 15000,
-              },
-            },
-          },
-          {
-            id: "5",
-            status: "pending",
-            createdAt: "2023-01-12T10:00:00Z",
-            shop: { item: { id: "s5", name: "초가을집" } },
-            notice: {
-              item: {
-                id: "n5",
-                description: "홀서빙",
-                startsAt: "2023-01-12T10:00:00Z",
-                workhour: 2,
-                hourlyPay: 15000,
-              },
-            },
-          },
-        ];
-
-        setApplications(mockItems);
-        setTotalCount(20); // 전체 데이터 수 (테스트용)
+        setTotalCount(res.count);
       } catch (err) {
-        console.error("지원 내역 불러오기 실패", err);
+        console.error("❌ 지원 내역 불러오기 실패", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchApplications();
-  }, [userId, page]);
+  }, [page, userId]);
 
   const formatDateTime = (datetime: string) => {
     const d = new Date(datetime);
@@ -278,16 +194,22 @@ const ApplicationList: React.FC<ApplicationListProps> = ({ userId }) => {
       .padStart(2, "0")}-${d
       .getDate()
       .toString()
-      .padStart(2, "0")} ${d
-      .getHours()
+      .padStart(2, "0")} ${d.getHours().toString().padStart(2, "0")}:${d
+      .getMinutes()
       .toString()
-      .padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+      .padStart(2, "0")}`;
   };
 
   const totalPages = Math.ceil(totalCount / limit);
 
   if (loading) return <Message>불러오는 중...</Message>;
-  if (applications.length === 0) return <Message>지원 내역이 없습니다.</Message>;
+  if (applications.length === 0)
+    return (
+      <EmptyState>
+        <EmptyMessage>아직 신청 내역이 없어요.</EmptyMessage>
+        <GoButton onClick={() => router.push("/")}>공고 보러가기</GoButton>
+      </EmptyState>
+    );
 
   return (
     <Wrapper>
@@ -304,9 +226,9 @@ const ApplicationList: React.FC<ApplicationListProps> = ({ userId }) => {
           <tbody>
             {applications.map((app) => (
               <tr key={app.id}>
-                <td>{app.shop.item.name}</td>
-                <td>{formatDateTime(app.notice.item.startsAt)}</td>
-                <td>{app.notice.item.hourlyPay.toLocaleString()}원</td>
+                <td>{app.shop?.item?.name}</td>
+                <td>{formatDateTime(app.notice?.item.startsAt)}</td>
+                <td>{app.notice?.item.hourlyPay.toLocaleString()}원</td>
                 <td>
                   <StatusBadge status={app.status}>
                     {app.status === "accepted"
@@ -324,7 +246,6 @@ const ApplicationList: React.FC<ApplicationListProps> = ({ userId }) => {
         </Table>
       </TableWrapper>
 
-      {/* ✅ 페이지네이션 */}
       <Pagination>
         <button
           className="ghost"

@@ -55,53 +55,55 @@ export default function LoginPage() {
   };
 
   // 로그인 버튼 클릭
-  const handleLogin = async () => {
-    if (!email || !password) {
-      openModal("이메일과 비밀번호를 입력해주세요.");
-      return;
-    }
-    if (!validateEmail(email)) {
-      openModal("이메일 형식을 확인해주세요.");
-      return;
-    }
-    if (password.length < 8) {
-      openModal("비밀번호가 8자 이상이어야 합니다.");
-      return;
-    }
+const handleLogin = async () => {
+  if (!email || !password) {
+    openModal("이메일과 비밀번호를 입력해주세요.");
+    return;
+  }
+  if (!validateEmail(email)) {
+    openModal("이메일 형식을 확인해주세요.");
+    return;
+  }
+  if (password.length < 8) {
+    openModal("비밀번호가 8자 이상이어야 합니다.");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // ✅ 실제 로그인 API 호출 (토큰/유저정보는 auth.ts에서 localStorage에 저장)
-      const res = await login(email, password);
-      const userType = res.item.user.item.type as "employer" | "employee";
+    // ✅ 로그인 요청
+    const res = await login(email, password);
 
-      // 안내 모달 (선택)
-      openModal("로그인 성공!");
+    // ✅ 토큰 및 유저 ID 저장
+    const token = res.item.token;
+    const userId = res.item.user.item.id;
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("userId", userId);
 
-      // ✅ next 파라미터가 있으면 원래 보던 페이지로 복귀
-      // 없으면 역할별 기본 라우팅
-      setTimeout(() => {
-        if (next) {
-          router.replace(next);
-        } else {
-          if (userType === "employer")
-            router.replace("/"); 
-          else router.replace("/"); 
-          // 필요시 공고 리스트가 기본이면: router.replace("/");
-        }
-      }, 600);
-    } catch (e: unknown) {
-      const err = e as AxiosError<{ message?: string }>;
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "로그인에 실패했습니다. 다시 시도해주세요.";
-      openModal(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const userType = res.item.user.item.type as "employer" | "employee";
+
+    openModal("로그인 성공!");
+
+    setTimeout(() => {
+      if (next) {
+        router.replace(next);
+      } else {
+        router.replace("/"); // 필요 시 조정
+      }
+    }, 600);
+  } catch (e: unknown) {
+    const err = e as AxiosError<{ message?: string }>;
+    const msg =
+      err?.response?.data?.message ||
+      err?.message ||
+      "로그인에 실패했습니다. 다시 시도해주세요.";
+    openModal(msg);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // 로고 클릭 → 공고 리스트(또는 원하는 경로)로 이동
   const handleLogoClick = () => {
